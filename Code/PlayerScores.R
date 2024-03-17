@@ -55,7 +55,6 @@ for (inn in Innings) {
         if (!is.null(jsonData$innings[[inn]]$overs[[over_index]]$deliveries[[currball]]$extras)) {
           if (!is.null(jsonData$innings[[inn]]$overs[[over_index]]$deliveries[[currball]]$extras$legbyes)) {
             h_bowler[[bowler]][[4]]=h_bowler[[bowler]][[4]]+1
-            runs=runs+1
             
           } 
           if (!is.null(jsonData$innings[[inn]]$overs[[over_index]]$deliveries[[currball]]$extras$wide)){
