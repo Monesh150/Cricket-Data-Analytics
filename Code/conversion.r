@@ -34,11 +34,29 @@ for (inn in Innings) {
       
       over_balls <- length(jsonData$innings[[inn]]$overs[[over_index]]$deliveries)
       currball <- 1
-      
+      extras_count=0
       while (currball <= over_balls) {
-        ball_index <- (balls %/% 6) * 6 + currball  # Calculate the current ball index
         
+        ball_index <- (balls %/% 6) * 6 + currball  # Calculate the current ball index
+        toss <- c(toss, jsonData$info$toss$winner)
+        match_winner <- c(match_winner, jsonData$info$outcome$winner)
+        batter <- jsonData$innings[[inn]]$overs[[over_index]]$deliveries[[currball]]$batter
+        bowler <- jsonData$innings[[inn]]$overs[[over_index]]$deliveries[[currball]]$bowler
+        runs <- jsonData$innings[[inn]]$overs[[over_index]]$deliveries[[currball]]$runs$batter
+        team <- jsonData$innings[[inn]]$team
+        batter_vector<-c(batter_vector,batter)
+        baller_vector <- c(baller_vector, bowler)
+        balls_vector <- c(balls_vector, balls%/%6 + 0.1*(currball-extras_count))
+        runsperball_vector <- c(runsperball_vector, runs)
+        country_vector <- c(country_vector, team)
+        Innings_vector <- c(Innings_vector, inn)
+        toss_winner<-c(toss_winner,toss)
+        toss_decision <- c(toss_decision, jsonData$info$toss$decision)
         if (!is.null(jsonData$innings[[inn]]$overs[[over_index]]$deliveries[[currball]]$extras)) {
+          if(is.null(jsonData$innings[[inn]]$overs[[over_index]]$deliveries[[currball]]$extras$legbyes))
+          {
+            extras_count=extras_count+1
+          }
           extra_vector <- c(extra_vector, TRUE)
         } else {
           extra_vector <- c(extra_vector, FALSE)
@@ -48,19 +66,6 @@ for (inn in Innings) {
         } else {
           margin <- c(margin, paste(jsonData$info$outcome$by$wickets, " runs"))
         }
-        toss <- c(toss, jsonData$info$toss$winner)
-        match_winner <- c(match_winner, jsonData$info$outcome$winner)
-        batter <- jsonData$innings[[inn]]$overs[[over_index]]$deliveries[[currball]]$batter
-        bowler <- jsonData$innings[[inn]]$overs[[over_index]]$deliveries[[currball]]$bowler
-        runs <- jsonData$innings[[inn]]$overs[[over_index]]$deliveries[[currball]]$runs$batter
-        team <- jsonData$innings[[inn]]$team
-        batter_vector<-c(batter_vector,batter)
-        baller_vector <- c(baller_vector, bowler)
-        balls_vector <- c(balls_vector, balls + currball)
-        runsperball_vector <- c(runsperball_vector, runs)
-        country_vector <- c(country_vector, team)
-        Innings_vector <- c(Innings_vector, inn)
-        toss_decision <- c(toss_decision, jsonData$info$toss$decision)
         
         currball <- currball + 1
       }
@@ -91,9 +96,8 @@ df <- data.frame(
   country = country_vector,
   innings = Innings_vector,
   toss_decision = toss_decision,
-  match_winner = match_winner
+  match_winner = match_winner,
+  toss_winner=match_winner
 )
 
-# Print the dataframe
-print(length(df))
-
+write.csv(df,"/Users/morampudigopiprashanthraju/Desktop/DataScience/Minor_Project-II/Data/IND vs AUS/ODI/2003/Conversion_demo.csv")
