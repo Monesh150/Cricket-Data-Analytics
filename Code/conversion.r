@@ -1,9 +1,9 @@
 # Load required library
 library(jsonlite)
-install.packages(hash)
-jsonData <- read_json(path = "/Users/morampudigopiprashanthraju/Desktop/DataScience/Minor_Project-II/Data/IND vs AUS/ODI/2003/65244.json")
+# install.packages(hash)
+# jsonData <- read_json(path = "/Users/morampudigopiprashanthraju/Desktop/DataScience/Minor_Project-II/Data/IND vs AUS/ODI/2003/65244.json")
 #Mushtaq's json path
-# jsonData <- read_json(path = "D:/Minor_Project-II/Data\IND vs AUS/ODI/2003/65244.json")
+jsonData <- read_json(path = "D:/Minor_Project-II/Data/IND vs AUS/ODI/2003/65244.json")
 
 balls <- 0
 flag <- TRUE
@@ -108,7 +108,7 @@ df <- data.frame(
   match_winner = match_winner
 )
 
-write.csv(df,"/Users/morampudigopiprashanthraju/Desktop/DataScience/Minor_Project-II/Data/IND vs AUS/ODI/2003/Conversion_demo.csv")
+# write.csv(df,"/Users/morampudigopiprashanthraju/Desktop/DataScience/Minor_Project-II/Data/IND vs AUS/ODI/2003/Conversion_demo.csv")
 # Mushtaq's path
-# write.csv(df,"D:/Minor_Project-II/Data/IND vs AUS/ODI/2003/Conversion_demo.csv")
+write.csv(df,"D:/Minor_Project-II/Data/IND vs AUS/ODI/2003/Conversion_demo.csv")
 print(df)
