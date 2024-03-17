@@ -1,12 +1,7 @@
 # Load required library
 library(jsonlite)
-library(hash)
-# Read JSON data
 install.packages(hash)
 jsonData <- read_json(path = "/Users/morampudigopiprashanthraju/Desktop/DataScience/Minor_Project-II/Data/IND vs AUS/ODI/2003/65244.json")
-#h=hash()
-# Initialize variables
-h=hash()
 balls <- 0
 flag <- TRUE
 batter_vector<-c()
@@ -43,10 +38,6 @@ for (inn in Innings) {
         toss <- c(toss, jsonData$info$toss$winner)
         match_winner <- c(match_winner, jsonData$info$outcome$winner)
         batter <- jsonData$innings[[inn]]$overs[[over_index]]$deliveries[[currball]]$batter
-        #if(is.null(h[batter])){
-        #h[[batter]]=0
-        #}
-        #h[[batter]]=h[[batter]]+1
         bowler <- jsonData$innings[[inn]]$overs[[over_index]]$deliveries[[currball]]$bowler
         runs <- jsonData$innings[[inn]]$overs[[over_index]]$deliveries[[currball]]$runs$batter # nolint: line_length_linter.
         team <- jsonData$innings[[inn]]$team
@@ -58,13 +49,6 @@ for (inn in Innings) {
         country_vector <- c(country_vector, team)
         Innings_vector <- c(Innings_vector, inn)
         toss_winner<-c(toss_winner,toss)
-        #if(!(batter %in% names(h))){
-        #h[[batter]]=c(team,0)
-        #}
-        if(!(batter %in% names(h))){
-          h[[batter]]=list(country=team,runs=0)
-        }
-        h[[batter]][[2]]=h[[batter]][[2]]+runs
         toss_decision <- c(toss_decision, jsonData$info$toss$decision)
         if (!is.null(jsonData$innings[[inn]]$overs[[over_index]]$deliveries[[currball]]$extras)) {
           if(is.null(jsonData$innings[[inn]]$overs[[over_index]]$deliveries[[currball]]$extras$legbyes))
@@ -92,16 +76,6 @@ for (inn in Innings) {
   }
 } 
 
-# print(baller_vector)
-# print(balls_vector)
-# print(runsperball_vector)
-# print(extra_vector)
-# print(country_vector)
-# print(Innings_vector)
-# print(toss_decision)
-# print(toss)
-# print(match_winner)
-# Create dataframe from collected data
 print(total_score)
 df <- data.frame(
   baller = baller_vector,
@@ -119,4 +93,3 @@ df <- data.frame(
 )
 
 write.csv(df,"/Users/morampudigopiprashanthraju/Desktop/DataScience/Minor_Project-II/Data/IND vs AUS/ODI/2003/Conversion_demo.csv")
-print(h)
