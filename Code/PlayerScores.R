@@ -4,7 +4,8 @@ library(hash)
 
 # Read JSON data
 jsonData <- read_json(path = "/Users/morampudigopiprashanthraju/Desktop/DataScience/Minor_Project-II/Data/IND vs AUS/ODI/2003/65244.json")
-
+#Mushtaq's json path
+# jsonData <- read_json(path = "D:/Minor_Project-II/Data/IND vs AUS/ODI/2003/65244.json")
 # Initialize hash
 h <- hash()
 h_bowler<-hash()
@@ -91,3 +92,6 @@ h_bowler_df <- data.frame(bowler = rownames(h_bowler_df), h_bowler_df, row.names
 write.csv(h_df, "/Users/morampudigopiprashanthraju/Desktop/DataScience/Minor_Project-II/Data/IND vs AUS/ODI/2003/batter.csv", row.names = FALSE)
 write.csv(h_bowler_df, "/Users/morampudigopiprashanthraju/Desktop/DataScience/Minor_Project-II/Data/IND vs AUS/ODI/2003/h_bowler.csv", row.names = FALSE)
 
+# Mushtaq's path
+# write.csv(df,"D:/Minor_Project-II/Data/IND vs AUS/ODI/2003/batter.csv")
+# write.csv(df,"D:/Minor_Project-II/Data/IND vs AUS/ODI/2003/h_bowler.csv")
