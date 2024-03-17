@@ -93,5 +93,5 @@ write.csv(h_df, "/Users/morampudigopiprashanthraju/Desktop/DataScience/Minor_Pro
 write.csv(h_bowler_df, "/Users/morampudigopiprashanthraju/Desktop/DataScience/Minor_Project-II/Data/IND vs AUS/ODI/2003/h_bowler.csv", row.names = FALSE)
 
 # Mushtaq's path
-# write.csv(df,"D:/Minor_Project-II/Data/IND vs AUS/ODI/2003/batter.csv")
-# write.csv(df,"D:/Minor_Project-II/Data/IND vs AUS/ODI/2003/h_bowler.csv")
+# write.csv(df,"D:/Minor_Project-II/Data/IND vs AUS/ODI/2003/batter.csv", row.names = FALSE)
+# write.csv(df,"D:/Minor_Project-II/Data/IND vs AUS/ODI/2003/h_bowler.csv",row.names = FALSE)
