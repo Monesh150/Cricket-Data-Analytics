@@ -93,3 +93,4 @@ df <- data.frame(
 )
 
 write.csv(df,"/Users/morampudigopiprashanthraju/Desktop/DataScience/Minor_Project-II/Data/IND vs AUS/ODI/2003/Conversion_demo.csv")
+print(df)
