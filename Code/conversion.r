@@ -28,7 +28,7 @@ for (inn in Innings) {
   flag <- TRUE
   balls<-0
   cumm_wickets=0
-  while (balls < 300 && flag) {
+  while (balls <= 300 && flag) {
     # print(toss_decision)
     tryCatch({
       over_index <- balls %/% 6 + 1
@@ -45,12 +45,12 @@ for (inn in Innings) {
         match_winner <- c(match_winner, jsonData$info$outcome$winner)
         batter <- jsonData$innings[[inn]]$overs[[over_index]]$deliveries[[currball]]$batter
         bowler <- jsonData$innings[[inn]]$overs[[over_index]]$deliveries[[currball]]$bowler
-        runs <- jsonData$innings[[inn]]$overs[[over_index]]$deliveries[[currball]]$runs$batter # nolint: line_length_linter.
+        runs <- jsonData$innings[[inn]]$overs[[over_index]]$deliveries[[currball]]$runs$batter 
         team <- jsonData$innings[[inn]]$team
         batter_vector<-c(batter_vector,batter)
         baller_vector <- c(baller_vector, bowler)
         balls_vector <- c(balls_vector, balls%/%6 + 0.1*(currball-extras_count))
-        cummulative_score=cummulative_score+runs
+        cummulative_score=cummulative_score+jsonData$innings[[inn]]$overs[[over_index]]$deliveries[[currball]]$runs$total
         runsperball_vector <- c(runsperball_vector, runs)
         country_vector <- c(country_vector, team)
         Innings_vector <- c(Innings_vector, inn)
@@ -59,7 +59,6 @@ for (inn in Innings) {
         if (!is.null(jsonData$innings[[inn]]$overs[[over_index]]$deliveries[[currball]]$extras)) {
           if(is.null(jsonData$innings[[inn]]$overs[[over_index]]$deliveries[[currball]]$extras$legbyes))
           {
-            cummulative_score=cummulative_score+1
             extras_count=extras_count+1
           }
           extra_vector <- c(extra_vector, TRUE)
