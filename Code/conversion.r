@@ -21,10 +21,13 @@ toss_decision <- c()
 match_winner <- c()
 margin <- c()
 total_score=c()
+wickets=c()
+cum_wickets=0
 for (inn in Innings) {
   cummulative_score=0
   flag <- TRUE
   balls<-0
+  cumm_wickets=0
   while (balls < 300 && flag) {
     # print(toss_decision)
     tryCatch({
@@ -69,6 +72,14 @@ for (inn in Innings) {
           margin <- c(margin, paste(jsonData$info$outcome$by$wickets, " runs"))
         }
         total_score=c(total_score,cummulative_score)
+        if(!is.null(jsonData$innings[[inn]]$overs[[over_index]]$deliveries[[currball]]$wickets)){
+          cum_wickets=cum_wickets+1
+          wickets=c(wickets,cum_wickets)
+        }
+        else{
+          wickets=c(wickets,0)
+        }
+        
         currball <- currball + 1
       }
       
@@ -80,6 +91,7 @@ for (inn in Innings) {
 } 
 
 print(total_score)
+print(wickets)
 df <- data.frame(
   baller = baller_vector,
   batter = batter_vector,
@@ -87,6 +99,7 @@ df <- data.frame(
   runsperball = runsperball_vector,
   extra = extra_vector,
   total_score=total_score,
+  wickets=wickets,
   country = country_vector,
   innings = Innings_vector,
   toss_decision = toss_decision,
