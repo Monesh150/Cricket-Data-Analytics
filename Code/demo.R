@@ -18,4 +18,6 @@ for(country in con){
     h[[pla]]=list(country=country,batting="NONE",bowling_style="None")
   }
 }
-print(h)
+h_df <- as.data.frame(t(sapply(h, unlist)))
+h_df <- data.frame(batter = rownames(h_df), h_df, row.names = NULL)
+write.csv(h_df, "/Users/morampudigopiprashanthraju/Desktop/DataScience/Minor_Project-II/Data/IND vs AUS/ODI/2003/players_details.csv", row.names = FALSE)
