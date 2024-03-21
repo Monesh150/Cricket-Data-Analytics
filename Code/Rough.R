@@ -3,10 +3,7 @@ base_dir <- "D:/Minor_Project-II/Data/IND vs AUS/ODI"
 year_folders <- list.files(base_dir)
 
 #Reading the Aussies's CSV file
-aus_players <- read.csv("D:/Minor_Project-II/Data/IND vs AUS/ODI/ausplayers.csv")
-
-#Reading the Indians's CSV file
-# indian_players <- read.csv("D:/Minor_Project-II/Data/IND vs AUS/ODI/indianplayers.csv")
+players_details <- read.csv("D:/Minor_Project-II/Data/IND vs AUS/ODI/players_details.csv")
 
 for (year in year_folders){
     json_files <- list.files(paste(base_dir, year, sep = "/"))
@@ -19,14 +16,23 @@ for (year in year_folders){
         json_data <- read_json(path=file_path)
         aplayers <- json_data$info$players$Australia
         for (player in aplayers){
-            if (player %in% aus_players){
+            if (player %in% players_details$player){
                 next()
             }
             else{
-                aus_players <- rbind(aus_players, player)
+                players_details <- rbind(players_details, data.frame(player=player, country="Australia", batting="None", bowling_style="None"))
+            }
+        }
+        iplayers <- json_data$info$players$India
+        for (player in iplayers){
+            if (player %in% players_details$player){
+                next()
+            }
+            else{
+                players_details <- rbind(players_details, data.frame(player=player, country="India", batting="None", bowling_style="None"))
             }
         }
     }
 }
-write.csv(aus_players,"D:/Minor_Project-II/Data/IND vs AUS/ODI/ausplayers.csv")
-# write(aus_players, file = file_path)
+write.csv(players_details,"D:/Minor_Project-II/Data/IND vs AUS/ODI/players_details.csv")
+# # write(aus_players, file = file_path)
