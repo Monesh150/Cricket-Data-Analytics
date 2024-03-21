@@ -54,8 +54,9 @@ for (inn in Innings) {
         h[[batter]][[2]] <- h[[batter]][[2]] + runs
         
         if (!is.null(jsonData$innings[[inn]]$overs[[over_index]]$deliveries[[currball]]$extras)) {
-          if (!is.null(jsonData$innings[[inn]]$overs[[over_index]]$deliveries[[currball]]$extras$legbyes)) {
-            h_bowler[[bowler]][[4]]=h_bowler[[bowler]][[4]]+1
+          if (is.null(jsonData$innings[[inn]]$overs[[over_index]]$deliveries[[currball]]$extras$legbyes)) {
+            h_bowler[[bowler]][[4]]=h_bowler[[bowler]][[4]]+jsonData$innings[[inn]]$overs[[over_index]]$deliveries[[currball]]$runs$extras
+            h_bowler[[bowler]][[2]]=h_bowler[[bowler]][[2]]+jsonData$innings[[inn]]$overs[[over_index]]$deliveries[[currball]]$runs$extras
             
           } 
           if (!is.null(jsonData$innings[[inn]]$overs[[over_index]]$deliveries[[currball]]$extras$wide)){
@@ -65,7 +66,7 @@ for (inn in Innings) {
         } else {
           h[[batter]][[3]]=h[[batter]][[3]]+1 
         }
-        h_bowler[[bowler]][[2]]=h_bowler[[bowler]][[2]]+runs
+        h_bowler[[bowler]][[2]]=h_bowler[[bowler]][[2]]+jsonData$innings[[inn]]$overs[[over_index]]$deliveries[[currball]]$runs$batter
         
         currball <- currball + 1
       }
