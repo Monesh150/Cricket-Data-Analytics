@@ -26,3 +26,4 @@ ggplot(combined_data, aes(x = BattingAverage, fill = Group, color = Group)) +
   scale_fill_manual(values = c("blue", "orange")) +
   scale_color_manual(values = c("blue", "orange")) +
   theme_minimal()
+print('Rough.R executed successfully!')
