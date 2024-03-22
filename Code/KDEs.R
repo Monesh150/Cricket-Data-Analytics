@@ -30,7 +30,28 @@
 
 
 data <- read.csv("D:/Minor_Project-II/Data/IND vs AUS/ODI/BatsmanScores.csv")
-for (i in 1:nrow(data)){
-  
-    print(data[i,]$player)
+aus_players_strike_rate <- data.frame( strike_rate = numeric())
+ind_players_strike_rate <- data.frame(strike_rate = numeric())
+for (i in 1:nrow(data)) {
+  if (data$country[i] == "Australia") {
+    aus_players_strike_rate <- rbind(aus_players_strike_rate, data.frame(strike_rate = data$strike_rate[i]))
+  } 
+  else{
+    ind_players_strike_rate <- rbind(ind_players_strike_rate, data.frame(strike_rate = data$strike_rate[i]))
+
+  }
 }
+print(ind_players_strike_rate)
+print(aus_players_strike_rate)
+aus_players_strike_rate$Group <- "Australia"
+ind_players_strike_rate$Group <- "India"
+combined_data <- rbind(aus_players_strike_rate, ind_players_strike_rate)
+# Create a KDE plot of strike rates
+ggplot(combined_data, aes(x = strike_rate, fill = Group, color = Group)) +
+  geom_density(alpha = 0.7) +
+  labs(title = "Kernel Density Estimation Plot of Strike Rates",
+       x = "Strike Rate",
+       y = "Density") +
+  scale_fill_manual(values = c("blue","yellow")) +
+  scale_color_manual(values = c("blue","yellow")) +
+  theme_minimal()
