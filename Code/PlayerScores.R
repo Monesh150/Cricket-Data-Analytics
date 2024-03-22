@@ -15,11 +15,13 @@ for(i in 1:nrow(df)) {
   # Update runs for batter
   if(!(row_data$batter %in% names(h))) {
     
-    h[[row_data$batter]] <- list(runs=row_data$runsperball,out=0,country=row_data$country)
+    h[[row_data$batter]] <- list(runs=row_data$runsperball,out=0,balls=0,country=row_data$country)
   } else {
     h[[row_data$batter]][[1]] <- h[[row_data$batter]][[1]] + row_data$runsperball
   }
-  
+  if(!row_data$extra){
+    h[[row_data$batter]][[3]]=h[[row_data$batter]][[3]]+1
+  }
   # Update runs and wickets for bowler
   prev_score <- 0
   
@@ -29,13 +31,15 @@ for(i in 1:nrow(df)) {
   prev_inn=row_data$innings
   if(!(row_data$baller %in% names(h_bowler))) {
     if(row_data$country=="Australia"){
-      h_bowler[[row_data$baller]] <- list(score = 0, wickets = 0,country="India")
+      h_bowler[[row_data$baller]] <- list(score = 0, wickets = 0,extra=0,country="India")
     }
     else{
-      h_bowler[[row_data$baller]] <- list(score = 0, wickets = 0,country="Australia")
+      h_bowler[[row_data$baller]] <- list(score = 0, wickets = 0,extra=0,country="Australia")
     }
   }
-  
+  if(row_data$extra){
+    h_bowler[[row_data$baller]][[3]]=h_bowler[[row_data$baller]][[3]]+1
+  }
   if(row_data$wickets != 0) {
     h_bowler[[row_data$baller]][[2]] <- h_bowler[[row_data$baller]][[2]] + 1
     h[[row_data$batter]][[2]]=1
