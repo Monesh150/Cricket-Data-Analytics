@@ -3,95 +3,53 @@ library(jsonlite)
 library(hash)
 
 # Read JSON data
-jsonData <- read_json(path = "/Users/morampudigopiprashanthraju/Desktop/DataScience/Minor_Project-II/Data/IND vs AUS/ODI/2003/65244.json")
-#Mushtaq's json path
-# jsonData <- read_json(path = "D:/Minor_Project-II/Data/IND vs AUS/ODI/2003/65244.json")
+df <- read.csv("/Users/morampudigopiprashanthraju/Desktop/DataScience/Minor_Project-II/Data/IND vs AUS/ODI/2003/CSVs/Conversion_demo.csv")
+
 # Initialize hash
 h <- hash()
-h_bowler<-hash()
-
-balls <- 0
-flag <- TRUE
-Innings <- c(1, 2)
-
-for (inn in Innings) {
-  cummulative_score <- 0
-  flag <- TRUE
-  balls <- 0
+h_bowler <- hash()
+prev_inn=0
+for(i in 1:nrow(df)) {
+  row_data <- df[i,]
   
-  while (balls < 300 && flag) {
-    tryCatch({
-      over_index <- balls %/% 6 + 1
-      
-      if (over_index > length(jsonData$innings[[inn]]$overs)) {
-        flag <- FALSE
-        break
-      }
-      
-      over_balls <- length(jsonData$innings[[inn]]$overs[[over_index]]$deliveries)
-      currball <- 1
-      
-      while (currball <= over_balls) {
-        batter <- jsonData$innings[[inn]]$overs[[over_index]]$deliveries[[currball]]$batter
-        bowler <- jsonData$innings[[inn]]$overs[[over_index]]$deliveries[[currball]]$bowler
-        runs <- jsonData$innings[[inn]]$overs[[over_index]]$deliveries[[currball]]$runs$batter
-        team <- jsonData$innings[[inn]]$team
-        
-        if (!(batter %in% names(h))) {
-          h[[batter]] <- list(country = team, runs = 0, balls = 0)
-        }
-        bowler_country <- jsonData$innings[[1]]$team
-        if (inn == 1) {
-          bowler_country <- jsonData$innings[[2]]$team
-        }
-        
-      
-        
-        if(!(bowler %in% names(h_bowler))){
-          h_bowler[[bowler]]<-list(country=bowler_country,runs=0,balls=0,extras=0)
-        }
-        h_bowler[[bowler]][[3]]=h_bowler[[bowler]][[3]]+1
-        h[[batter]][[2]] <- h[[batter]][[2]] + runs
-        
-        if (!is.null(jsonData$innings[[inn]]$overs[[over_index]]$deliveries[[currball]]$extras)) {
-          if (is.null(jsonData$innings[[inn]]$overs[[over_index]]$deliveries[[currball]]$extras$legbyes)) {
-            h_bowler[[bowler]][[4]]=h_bowler[[bowler]][[4]]+jsonData$innings[[inn]]$overs[[over_index]]$deliveries[[currball]]$runs$extras
-            h_bowler[[bowler]][[2]]=h_bowler[[bowler]][[2]]+jsonData$innings[[inn]]$overs[[over_index]]$deliveries[[currball]]$runs$extras
-            
-          } 
-          if (!is.null(jsonData$innings[[inn]]$overs[[over_index]]$deliveries[[currball]]$extras$wide)){
-            h[[batter]][[3]]=h[[batter]][[3]]+1 
-          }
-          
-        } else {
-          h[[batter]][[3]]=h[[batter]][[3]]+1 
-        }
-        h_bowler[[bowler]][[2]]=h_bowler[[bowler]][[2]]+jsonData$innings[[inn]]$overs[[over_index]]$deliveries[[currball]]$runs$batter
-        
-        currball <- currball + 1
-      }
-      
-      balls <- balls + 6
-    }, error = function(e) {
-      flag <- FALSE
-    })
+  # Update runs for batter
+  if(!(row_data$batter %in% names(h))) {
+    
+    h[[row_data$batter]] <- list(runs=row_data$runsperball,out=0,country=row_data$country)
+  } else {
+    h[[row_data$batter]][[1]] <- h[[row_data$batter]][[1]] + row_data$runsperball
   }
-} 
-print(2)
-print(h)
-print(h_bowler)
-# Convert hash h to a data frame
+  
+  # Update runs and wickets for bowler
+  prev_score <- 0
+  
+  if(i != 1 && row_data$innings==prev_inn) {
+    prev_score <- df[i - 1,]$total_score
+  }
+  prev_inn=row_data$innings
+  if(!(row_data$baller %in% names(h_bowler))) {
+    if(row_data$country=="Australia"){
+      h_bowler[[row_data$baller]] <- list(score = 0, wickets = 0,country="India")
+    }
+    else{
+      h_bowler[[row_data$baller]] <- list(score = 0, wickets = 0,country="Australia")
+    }
+  }
+  
+  if(row_data$wickets != 0) {
+    h_bowler[[row_data$baller]][[2]] <- h_bowler[[row_data$baller]][[2]] + 1
+    h[[row_data$batter]][[2]]=1
+  }
+  
+  h_bowler[[row_data$baller]][[1]] <- h_bowler[[row_data$baller]][[1]]+row_data$total_score - prev_score
+  print(h_bowler)
+}
+
 h_df <- as.data.frame(t(sapply(h, unlist)))
-h_df <- data.frame(batter = rownames(h_df), h_df, row.names = NULL)
-
-# Convert hash h_bowler to a data frame
-h_bowler_df <- as.data.frame(t(sapply(h_bowler, unlist)))
-h_bowler_df <- data.frame(bowler = rownames(h_bowler_df), h_bowler_df, row.names = NULL)
-
-# Write data frames to CSV files
-write.csv(h_df, "/Users/morampudigopiprashanthraju/Desktop/DataScience/Minor_Project-II/Data/IND vs AUS/ODI/2003/batter.csv", row.names = FALSE)
-write.csv(h_bowler_df, "/Users/morampudigopiprashanthraju/Desktop/DataScience/Minor_Project-II/Data/IND vs AUS/ODI/2003/h_bowler.csv", row.names = FALSE)
-
-# Mushtaq's path
-# write.csv(df,"D:/Minor_Project-II/Data/IND vs AUS/ODI/2003/batter.csv", row.names = FALSE)
-# write.csv(df,"D:/Minor_Project-II/Data/IND vs AUS/ODI/2003/h_bowler.csv",row.names = FALSE)
+h_df <- data.frame(player = rownames(h_df), h_df, row.names = NULL)
+# write.csv(h_df, "/Users/morampudigopiprashanthraju/Desktop/DataScience/Minor_Project-II/Data/IND vs AUS/ODI/2003/players_details.csv", row.names = FALSE)
+write.csv(h_df, "/Users/morampudigopiprashanthraju/Desktop/DataScience/Minor_Project-II/Data/IND vs AUS/ODI/BatsmanScores.csv", row.names = FALSE)
+h_df <- as.data.frame(t(sapply(h_bowler, unlist)))
+h_df <- data.frame(player = rownames(h_df), h_df, row.names = NULL)
+# write.csv(h_df, "/Users/morampudigopiprashanthraju/Desktop/DataScience/Minor_Project-II/Data/IND vs AUS/ODI/2003/players_details.csv", row.names = FALSE)
+write.csv(h_df, "/Users/morampudigopiprashanthraju/Desktop/DataScience/Minor_Project-II/Data/IND vs AUS/ODI/BowlerStats.csv", row.names = FALSE)
