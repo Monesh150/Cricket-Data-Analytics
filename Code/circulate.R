@@ -3,8 +3,8 @@ base_dir <- "D:/Minor_Project-II/Data/IND vs AUS/ODI"
 year_folders <- list.files(base_dir)
 
 batsman_scores <- read.csv("D:/Minor_Project-II/Data/IND vs AUS/ODI/BatsmanScores.csv")
-
-for (year in year_folders){
+bowler_scores <- read.csv("D:/Minor_Project-II/Data/IND vs AUS/ODI/BowlerStats.csv")
+for (year in year_folders[1:1]){
     json_files <- list.files(paste(base_dir, year, sep = "/"))
     for (json_file in json_files){
         if (json_file == "CSVs" || json_file == "65244.json"){
@@ -34,6 +34,24 @@ for (year in year_folders){
             batsman_scores <- rbind(batsman_scores, data.frame(player = row$player, runs = row$runs, out = row$out, balls = row$balls, country = row$country))
     }
     }
+        for(i in 1:nrow(batsman_bowler_data[[2]])){
+            row = batsman_bowler_data[[2]][i,]
+            row$score = as.numeric(row$score)
+            row$wickets = as.numeric(row$wickets)
+            row$extra = as.numeric(row$extra)
+            if(row$player %in% bowler_scores$player){
+                bowler_scores[bowler_scores$player == row$player, "score"] <- bowler_scores[bowler_scores$player == row$player, "score"] + row$score
+                bowler_scores[bowler_scores$player == row$player, "wickets"] <- bowler_scores[bowler_scores$player == row$player, "wickets"] + row$wickets
+                bowler_scores[bowler_scores$player == row$player, "extra"] <- bowler_scores[bowler_scores$player == row$player, "extra"] + row$extra
+        }
+        else{
+            bowler_scores <- rbind(bowler_scores, data.frame(player = row$player, score = row$score, wickets = row$wickets, extra = row$extra, country = row$country))
+    }
+    }
 }
-print(batsman_scores)
+# print(batsman_scores)
 }
+print(bowler_scores)
+#writing only 2003 data to csv
+# write.csv(batsman_scores, "D:/Minor_Project-II/Data/IND vs AUS/ODI/BatsmanScores.csv", row.names = FALSE)
+# write.csv(bowler_scores, "D:/Minor_Project-II/Data/IND vs AUS/ODI/BowlerStats.csv", row.names = FALSE)
