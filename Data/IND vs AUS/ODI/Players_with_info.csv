@@ -1,0 +1,165 @@
+Unnamed: 0,player,country,batting,bowling_style
+1,DR Martyn,Australia,Right,Offspin
+2,GD McGrath,Australia,Right,Fast
+3,A Symonds,Australia,Right,Medium
+4,GB Hogg,Australia,Left,Left-arm orthodox
+5,SR Tendulkar,India,Right,Legbreak
+6,D Mongia,India,Left,Right-arm off break
+7,Harbhajan Singh,India,Right,Off-spin
+8,MG Bevan,Australia,Right,Right-arm offbreak
+9,Z Khan,India,**Right**,**Fast**
+10,M Kaif,India,Right,Off-spin
+11,DS Lehmann,Australia,Right,Legbreak
+12,ML Hayden,Australia,Right,Right-arm medium
+13,A Kumble,India,Right,Leg spin
+14,Yuvraj Singh,India,Left,Left-arm
+15,AC Gilchrist,Australia,Left,Off-spin
+16,B Lee,Australia,Right,Fast
+17,RT Ponting,Australia,Right,Medium
+18,V Sehwag,India,Right,Off-spin
+19,J Srinath,India,Right,Fast
+20,JN Gillespie,Australia,Right,Offbreak
+21,SC Ganguly,India,Left,Left-arm
+22,R Dravid,India,Right,Off-spin
+23,AJ Bichel,Australia,Right,Medium
+24,A Nehra,India,Left,Left-arm medium
+25,IJ Harvey,Australia,Right,Offbreak
+26,BA Williams,Australia,Right,Leg break
+27,NW Bracken,Australia,Right,Fast-medium
+28,VVS Laxman,India,**Right**,**Right-arm**
+29,AB Agarkar,India,Right,Medium
+30,PA Patel,India,Right,Left-arm unorthodox spin
+31,MJ Clarke,Australia,Left,Right-arm
+32,SB Bangar,India,Right,Right-arm off break
+33,IK Pathan,India,Left,Left-arm
+34,L Balaji,India,Right,Medium-fast
+35,RS Gavaskar,India,Right,Off-spin
+36,HK Badani,India,Right,Left-arm orthodox
+37,SM Katich,Australia,Left,Left-arm orthodox
+38,M Kartik,India,Left,Slow left-arm orthodox
+39,MEK Hussey,Australia,Right,Offspin
+40,BJ Haddin,Australia,Right,Wicket-keeper
+41,MS Kasprowicz,Australia,Right,Fast-medium
+42,SR Watson,Australia,Right,Right-arm Fast Medium
+43,MG Johnson,Australia,Right,Off-spin
+44,MS Dhoni,India,Right,Wicket-keeper
+45,SK Raina,India,Left,Off-spin
+46,MM Patel,India,Left,Slow left-arm orthodox
+47,S Sreesanth,India,Right,Fast
+48,PA Jaques,Australia,Right,Right-arm medium
+49,MJ Cosgrove,Australia,Right,Right-arm
+50,SR Clark,Australia,Right,Right-arm fast-medium
+51,RP Singh,India,Left,Left-arm
+52,BJ Hodge,Australia,Right,Right-arm off break
+53,JR Hopes,Australia,Right,Right-arm off-break
+54,G Gambhir,India,**Left**,**Right-arm off break**
+55,RR Powar,India,**Right**,**Slow left-arm orthodox**
+56,RV Uthappa,India,Right,Right-arm medium
+57,RG Sharma,India,Right,Off-spin
+58,KD Karthik,India,Right,Wicket-keeper
+59,AA Noffke,Australia,Right,Right-arm medium
+60,MK Tiwary,India,Right,Right-arm off break
+61,I Sharma,India,Right,Pace
+62,P Kumar,India,**Right**,**Medium**
+63,PP Chawla,India,Right,Leg-break
+64,TD Paine,Australia,Right,Wicket-keeper
+65,CL White,Australia,Right,Right-arm fast
+66,CJ Ferguson,Australia,Left,Right-arm fast-medium
+67,NM Hauritz,Australia,Left,Off-spin
+68,PM Siddle,Australia,Right,Fast-medium
+69,V Kohli,India,Right,Right-arm medium
+70,A Mishra,India,Right,Leg spin
+71,AC Voges,Australia,Right,Offspin
+72,RA Jadeja,India,Left,Left-arm orthodox
+73,SE Marsh,Australia,Right,Off-spin
+74,BW Hilfenhaus,Australia,Right,Fast-medium
+75,MC Henriques,Australia,Right,Offspin
+76,GA Manou,Australia,Right,Offbreak
+77,DE Bollinger,Australia,Right,Left-arm fast-medium
+78,CJ McKay,Australia,Right,Right-arm
+79,SPD Smith,Australia,Right,Legbreak
+80,JW Hastings,Australia,Right,Right-arm fast
+81,MA Starc,Australia,Left,Left-arm fast
+82,S Dhawan,India,Left,Off-spin
+83,M Vijay,India,Right,Offspin
+84,SS Tiwary,India,**Right**,**Right-arm off break**
+85,R Ashwin,India,Right,Off-spin
+86,R Vinay Kumar,India,Right,Medium
+87,DJ Hussey,Australia,Right,Right-arm off-break
+88,JJ Krejza,Australia,Right,Off-spin
+89,SW Tait,Australia,Right,Fast-medium
+90,MS Wade,Australia,Right,Wicket-keeper
+91,DA Warner,Australia,Left,Leg-spin
+92,DT Christian,Australia,Left,Left-arm orthodox
+93,RJ Harris,Australia,Right,Left-arm
+94,XJ Doherty,Australia,Right,Right-arm fast-medium
+95,R Sharma,India,Right,Off-spin
+96,PJ Forrest,Australia,Right,Left-arm medium
+97,UT Yadav,India,Right,Leg break
+98,PJ Hughes,Australia,Right,Fast-medium
+99,AJ Finch,Australia,Right,Right-arm fast
+100,GJ Bailey,Australia,Left,Slow left-arm orthodox
+101,GJ Maxwell,Australia,Right,Off-spin
+102,JP Faulkner,Australia,**Right**,**Right-arm**
+103,B Kumar,India,Right,Medium
+104,Mohammed Shami,India,Right,Fast
+105,JD Unadkat,India,Left,Left-arm
+106,NM Coulter-Nile,Australia,Right,Fast-medium
+107,JR Hazlewood,Australia,Right,Fast
+108,AM Rahane,India,Right,Right-arm
+109,MM Sharma,India,Right,Off-spin
+110,PJ Cummins,Australia,Right,Fast
+111,GS Sandhu,Australia,Right,Right-arm fast-medium
+112,AR Patel,India,Left,Slow left-arm orthodox
+113,MR Marsh,Australia,Right,Pace
+114,AT Rayudu,India,Right,Off-break
+115,STR Binny,India,Right,Medium
+116,SM Boland,Australia,Right,Right-arm
+117,JS Paris,Australia,Right,Right-arm fast
+118,MK Pandey,India,Right,Right-arm medium
+119,BB Sran,India,Right,Left-arm medium
+120,KW Richardson,Australia,Right,Fast
+121,Gurkeerat Singh,India,Right,Off-spin
+122,R Dhawan,India,Right,Off-spin
+123,NM Lyon,Australia,Left,Off-spin
+124,JJ Bumrah,India,Right,Pace
+125,HWR Cartwright,Australia,Right,Right-arm
+126,TM Head,Australia,Right,Right-arm
+127,MP Stoinis,Australia,Right,Medium
+128,A Zampa,Australia,**Right**,**Leg-spin**
+129,KM Jadhav,India,Right,Right-arm off break
+130,HH Pandya,India,Right,Medium-fast
+131,Kuldeep Yadav,India,Left,Chinaman
+132,YS Chahal,India,Right,Leg-break
+133,AC Agar,Australia,Left,Spin
+134,PSP Handscomb,Australia,Right,Off-spin
+135,UT Khawaja,Australia,**Left**,**Right-arm off break**
+136,AT Carey,Australia,Right,Wicket-keeper
+137,KL Rahul,India,Right,Right-arm medium
+138,JA Richardson,Australia,Right,Pace
+139,JP Behrendorff,Australia,Left,Left-arm fast-medium
+140,KK Ahmed,India,Right,Leg break
+141,Mohammed Siraj,India,Right,Fast
+142,B Stanlake,Australia,Right,Fast
+143,V Shankar,India,Right,Medium
+144,AJ Turner,Australia,Right,Right-arm
+145,RR Pant,India,Left,Right-arm
+146,M Labuschagne,Australia,Right,Leg-spin
+147,SS Iyer,India,Right,Right-arm leg break
+148,SN Thakur,India,Left,Left-arm orthodox
+149,Navdeep Saini,India,Right,Medium-fast
+150,MA Agarwal,India,Right,Right-arm
+151,C Green,Australia,Left,Right-arm
+152,SA Abbott,Australia,Right,Right-arm fast
+153,Shubman Gill,India,Right,Right-arm off break
+154,T Natarajan,India,Left,Left-arm
+155,JP Inglis,Australia,Right,Right-arm off break
+156,Ishan Kishan,India,Left,Right-arm off-break
+157,SA Yadav,India,Right,Spin
+158,NT Ellis,Australia,Right,Right-arm
+159,MW Short,Australia,**Left**,**Right-arm**
+160,RD Gaikwad,India,Right,Right-arm off break
+161,SH Johnson,Australia,Right,Fast
+162,M Prasidh Krishna,India,Right,Fast
+163,T Sangha,Australia,Right,Legbreak
+164,Washington Sundar,India,Left,Spin
