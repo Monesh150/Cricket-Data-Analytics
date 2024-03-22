@@ -1,9 +1,14 @@
 # Load required library
 library(jsonlite)
 # install.packages(hash)
-jsonData <- read_json(path = "/Users/morampudigopiprashanthraju/Desktop/DataScience/Minor_Project-II/Data/IND vs AUS/ODI/2003/65244.json")
+# jsonData <- read_json(path = "/Users/morampudigopiprashanthraju/Desktop/DataScience/Minor_Project-II/Data/IND vs AUS/ODI/2003/65244.json")
 #Mushtaq's json path
-#jsonData <- read_json(path = "C:\Users\janga\OneDrive\Desktop\Minor_Project-II/Data/IND vs AUS/ODI/2003/65244.json")
+# file_path <- "D:/Minor_Project-II/Data/IND vs AUS/ODI/2003/65244.json"
+
+#Defining function
+convert_to_csv <- function(file_path){
+jsonData <- read_json(path = file_path)
+
 
 balls <- 0
 flag <- TRUE
@@ -89,8 +94,8 @@ for (inn in Innings) {
   }
 } 
 
-print(total_score)
-print(wickets)
+# print(total_score)
+# print(wickets)
 df <- data.frame(
   baller = baller_vector,
   batter = batter_vector,
@@ -110,4 +115,7 @@ df <- data.frame(
 # write.csv(df,"/Users/morampudigopiprashanthraju/Desktop/DataScience/Minor_Project-II/Data/IND vs AUS/ODI/2003/Conversion_demo.csv")
 # Mushtaq's path
 #write.csv(df,"C:\Users\janga\OneDrive\Desktop\Minor_Project-II/Data/IND vs AUS/ODI/2003/Conversion_demo.csv")
-print(df)
+# print(df)
+return( df)
+}
+# convert_to_csv(file_path)

@@ -1,9 +1,11 @@
+player_scores<- function(df){
 # Load required library
 library(jsonlite)
 library(hash)
 
 # Read JSON data
-df <- read.csv("/Users/morampudigopiprashanthraju/Desktop/DataScience/Minor_Project-II/Data/IND vs AUS/ODI/2003/CSVs/Conversion_demo.csv")
+# df <- read.csv("/Users/morampudigopiprashanthraju/Desktop/DataScience/Minor_Project-II/Data/IND vs AUS/ODI/2003/CSVs/Conversion_demo.csv")
+# df<- read.csv("D:/Minor_Project-II/Data/IND vs AUS/ODI/2003/CSVs/Conversion_demo.csv")
 
 # Initialize hash
 h <- hash()
@@ -46,14 +48,16 @@ for(i in 1:nrow(df)) {
   }
   
   h_bowler[[row_data$baller]][[1]] <- h_bowler[[row_data$baller]][[1]]+row_data$total_score - prev_score
-  print(h_bowler)
+  # print(h_bowler)
 }
 
 h_df <- as.data.frame(t(sapply(h, unlist)))
-h_df <- data.frame(player = rownames(h_df), h_df, row.names = NULL)
+h_df1 <- data.frame(player = rownames(h_df), h_df, row.names = NULL)
 # write.csv(h_df, "/Users/morampudigopiprashanthraju/Desktop/DataScience/Minor_Project-II/Data/IND vs AUS/ODI/2003/players_details.csv", row.names = FALSE)
-write.csv(h_df, "/Users/morampudigopiprashanthraju/Desktop/DataScience/Minor_Project-II/Data/IND vs AUS/ODI/BatsmanScores.csv", row.names = FALSE)
+# write.csv(h_df, "/Users/morampudigopiprashanthraju/Desktop/DataScience/Minor_Project-II/Data/IND vs AUS/ODI/BatsmanScores.csv", row.names = FALSE)
 h_df <- as.data.frame(t(sapply(h_bowler, unlist)))
-h_df <- data.frame(player = rownames(h_df), h_df, row.names = NULL)
+h_df2 <- data.frame(player = rownames(h_df), h_df, row.names = NULL)
 # write.csv(h_df, "/Users/morampudigopiprashanthraju/Desktop/DataScience/Minor_Project-II/Data/IND vs AUS/ODI/2003/players_details.csv", row.names = FALSE)
-write.csv(h_df, "/Users/morampudigopiprashanthraju/Desktop/DataScience/Minor_Project-II/Data/IND vs AUS/ODI/BowlerStats.csv", row.names = FALSE)
+# write.csv(h_df, "/Users/morampudigopiprashanthraju/Desktop/DataScience/Minor_Project-II/Data/IND vs AUS/ODI/BowlerStats.csv", row.names = FALSE)
+return (list(h_df1,h_df2))
+}
