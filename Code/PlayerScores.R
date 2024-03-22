@@ -33,14 +33,17 @@ for(i in 1:nrow(df)) {
   prev_inn=row_data$innings
   if(!(row_data$baller %in% names(h_bowler))) {
     if(row_data$country=="Australia"){
-      h_bowler[[row_data$baller]] <- list(score = 0, wickets = 0,extra=0,country="India")
+      h_bowler[[row_data$baller]] <- list(score = 0, wickets = 0,extra=0,balls=0,country="India")
     }
     else{
-      h_bowler[[row_data$baller]] <- list(score = 0, wickets = 0,extra=0,country="Australia")
+      h_bowler[[row_data$baller]] <- list(score = 0, wickets = 0,extra=0,balls=0,country="Australia")
     }
   }
   if(row_data$extra){
     h_bowler[[row_data$baller]][[3]]=h_bowler[[row_data$baller]][[3]]+1
+  }
+  else{
+    h_bowler[[row_data$baller]][[4]]<-h_bowler[[row_data$baller]][[4]]+1
   }
   if(row_data$wickets != 0) {
     h_bowler[[row_data$baller]][[2]] <- h_bowler[[row_data$baller]][[2]] + 1
@@ -59,5 +62,7 @@ h_df <- as.data.frame(t(sapply(h_bowler, unlist)))
 h_df2 <- data.frame(player = rownames(h_df), h_df, row.names = NULL)
 # write.csv(h_df, "/Users/morampudigopiprashanthraju/Desktop/DataScience/Minor_Project-II/Data/IND vs AUS/ODI/2003/players_details.csv", row.names = FALSE)
 # write.csv(h_df, "/Users/morampudigopiprashanthraju/Desktop/DataScience/Minor_Project-II/Data/IND vs AUS/ODI/BowlerStats.csv", row.names = FALSE)
+write.csv(h_df2, "D:/Minor_Project-II/Data/IND vs AUS/ODI/BowlerStats.csv", row.names = FALSE)
 return (list(h_df1,h_df2))
 }
+# player_scores()

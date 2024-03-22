@@ -20,32 +20,34 @@ for (year in year_folders[1:1]){
         source("D:/Minor_Project-II/Code/PlayerScores.r")
         batsman_bowler_data<-player_scores(csv_converted)
         # print(batsman_bowler_data)
-        for(i in 1:nrow(batsman_bowler_data[[1]])){
-            row = batsman_bowler_data[[1]][i,]
-            row$runs = as.numeric(row$runs)
-            row$out = as.numeric(row$out)
-            row$balls = as.numeric(row$balls)
-            if(row$player %in% batsman_scores$player){
-                batsman_scores[batsman_scores$player == row$player, "runs"] <- batsman_scores[batsman_scores$player == row$player, "runs"] + row$runs
-                batsman_scores[batsman_scores$player == row$player, "out"] <- batsman_scores[batsman_scores$player == row$player, "out"] + row$out
-                batsman_scores[batsman_scores$player == row$player, "balls"] <- batsman_scores[batsman_scores$player == row$player, "balls"] + row$balls
-        }
-        else{
-            batsman_scores <- rbind(batsman_scores, data.frame(player = row$player, runs = row$runs, out = row$out, balls = row$balls, country = row$country))
-    }
-    }
+    #     for(i in 1:nrow(batsman_bowler_data[[1]])){
+    #         row = batsman_bowler_data[[1]][i,]
+    #         row$runs = as.numeric(row$runs)
+    #         row$out = as.numeric(row$out)
+    #         row$balls = as.numeric(row$balls)
+    #         if(row$player %in% batsman_scores$player){
+    #             batsman_scores[batsman_scores$player == row$player, "runs"] <- batsman_scores[batsman_scores$player == row$player, "runs"] + row$runs
+    #             batsman_scores[batsman_scores$player == row$player, "out"] <- batsman_scores[batsman_scores$player == row$player, "out"] + row$out
+    #             batsman_scores[batsman_scores$player == row$player, "balls"] <- batsman_scores[batsman_scores$player == row$player, "balls"] + row$balls
+    #     }
+    #     else{
+    #         batsman_scores <- rbind(batsman_scores, data.frame(player = row$player, runs = row$runs, out = row$out, balls = row$balls, country = row$country))
+    # }
+    # }
         for(i in 1:nrow(batsman_bowler_data[[2]])){
             row = batsman_bowler_data[[2]][i,]
             row$score = as.numeric(row$score)
             row$wickets = as.numeric(row$wickets)
+            row$balls = as.numeric(row$balls)
             row$extra = as.numeric(row$extra)
             if(row$player %in% bowler_scores$player){
                 bowler_scores[bowler_scores$player == row$player, "score"] <- bowler_scores[bowler_scores$player == row$player, "score"] + row$score
                 bowler_scores[bowler_scores$player == row$player, "wickets"] <- bowler_scores[bowler_scores$player == row$player, "wickets"] + row$wickets
                 bowler_scores[bowler_scores$player == row$player, "extra"] <- bowler_scores[bowler_scores$player == row$player, "extra"] + row$extra
+                bowler_scores[bowler_scores$player == row$player, "balls"] <- bowler_scores[bowler_scores$player == row$player, "balls"] + row$balls
         }
         else{
-            bowler_scores <- rbind(bowler_scores, data.frame(player = row$player, score = row$score, wickets = row$wickets, extra = row$extra, country = row$country))
+            bowler_scores <- rbind(bowler_scores, data.frame(player = row$player, score = row$score, wickets = row$wickets, extra = row$extra,balls = row$balls, country = row$country))
     }
     }
 }
@@ -54,4 +56,4 @@ for (year in year_folders[1:1]){
 print(bowler_scores)
 #writing only 2003 data to csv
 # write.csv(batsman_scores, "D:/Minor_Project-II/Data/IND vs AUS/ODI/BatsmanScores.csv", row.names = FALSE)
-# write.csv(bowler_scores, "D:/Minor_Project-II/Data/IND vs AUS/ODI/BowlerStats.csv", row.names = FALSE)
+write.csv(bowler_scores, "D:/Minor_Project-II/Data/IND vs AUS/ODI/BowlerStats.csv", row.names = FALSE)
