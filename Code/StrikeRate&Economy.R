@@ -1,12 +1,12 @@
 #Batsman data manipulation
-# batsman_data = read.csv("D:/Minor_Project-II/Data/IND vs AUS/ODI/BatsmanScores.csv")
+batsman_data = read.csv("D:/Minor_Project-II/Data/IND vs AUS/ODI/BatsmanScores.csv")
 # print(batsman_data)
-# strikerate = (batsman_data$runs/batsman_data$balls)*100
-# batsman_data$strike_rate = strikerate
-# print(batsman_data)
+strikerate = (batsman_data$runs/batsman_data$balls)*100
+batsman_data$strike_rate = strikerate
 batting_average = ifelse(batsman_data$out != 0, batsman_data$runs/batsman_data$out, 0)
-print(batting_average)
+# print(batting_average)
 batsman_data$batting_average = batting_average
+print(batsman_data)
 write.csv(batsman_data, "D:/Minor_Project-II/Data/IND vs AUS/ODI/BatsmanScores.csv", row.names = FALSE)
 
 #Bowler data manipulation

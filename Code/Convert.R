@@ -1,14 +1,5 @@
-# Load required library
 library(jsonlite)
-# install.packages(hash)
-# jsonData <- read_json(path = "/Users/morampudigopiprashanthraju/Desktop/DataScience/Minor_Project-II/Data/IND vs AUS/ODI/2003/65244.json")
-#Mushtaq's json path
-# file_path <- "D:/Minor_Project-II/Data/IND vs AUS/ODI/2003/65244.json"
-
-#Defining function
-convert_to_csv <- function(file_path){
-jsonData <- read_json(path = file_path)
-# print(jsonData)
+jsonData <- read_json(path = "D:/Minor_Project-II/Data/IND vs AUS/ODI/2004/66375.json")
 
 balls <- 0
 flag <- TRUE
@@ -28,24 +19,6 @@ margin <- c()
 total_score=c()
 wickets=c()
 cum_wickets=0
-df <- data.frame(
-  baller = baller_vector,
-  batter = batter_vector,
-  balls = balls_vector,
-  runsperball = runsperball_vector,
-  extra = extra_vector,
-  total_score=total_score,
-  wickets=wickets,
-  country = country_vector,
-  innings = Innings_vector,
-  toss_decision = toss_decision,
-  toss_winner=match_winner,
-  margin=margin,
-  match_winner = match_winner
-)
-if (!is.null(jsonData$info$outcome$result)) {
-  return(df)
-}
 for (inn in Innings) {
   cummulative_score=0
   flag <- TRUE
@@ -63,7 +36,7 @@ for (inn in Innings) {
       currball <- 1
       extras_count=0
       while (currball <= over_balls) {
-    # print(over_index)
+    print(over_index)
         ball_index <- (balls %/% 6) * 6 + currball  # Calculate the current ball index
         toss <- c(toss, jsonData$info$toss$winner)
         match_winner <- c(match_winner, jsonData$info$outcome$winner)
@@ -133,8 +106,5 @@ df <- data.frame(
 
 # write.csv(df,"/Users/morampudigopiprashanthraju/Desktop/DataScience/Minor_Project-II/Data/IND vs AUS/ODI/2003/Conversion_demo.csv")
 # Mushtaq's path
-#write.csv(df,"C:\Users\janga\OneDrive\Desktop\Minor_Project-II/Data/IND vs AUS/ODI/2003/Conversion_demo.csv")
+write.csv(df,"D:/Minor_Projects-II/Data/IND vs AUS/ODI/2003/CSVs/66375.csv")
 # print(df)
-return( df)
-}
-# convert_to_csv(file_path)

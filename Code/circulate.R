@@ -4,7 +4,7 @@ year_folders <- list.files(base_dir)
 
 batsman_scores <- read.csv("D:/Minor_Project-II/Data/IND vs AUS/ODI/BatsmanScores.csv")
 bowler_scores <- read.csv("D:/Minor_Project-II/Data/IND vs AUS/ODI/BowlerStats.csv")
-for (year in year_folders[1:1]){
+for (year in year_folders){
     json_files <- list.files(paste(base_dir, year, sep = "/"))
     for (json_file in json_files){
         if (json_file == "CSVs" || json_file == "65244.json"){
@@ -17,23 +17,26 @@ for (year in year_folders[1:1]){
         # Send file_path to conversion.r and get converted data
         source("D:/Minor_Project-II/Code/conversion.r")
         csv_converted <- convert_to_csv(file_path)
+        if (nrow(csv_converted)==0){
+            next()
+        }
         source("D:/Minor_Project-II/Code/PlayerScores.r")
         batsman_bowler_data<-player_scores(csv_converted)
         # print(batsman_bowler_data)
-    #     for(i in 1:nrow(batsman_bowler_data[[1]])){
-    #         row = batsman_bowler_data[[1]][i,]
-    #         row$runs = as.numeric(row$runs)
-    #         row$out = as.numeric(row$out)
-    #         row$balls = as.numeric(row$balls)
-    #         if(row$player %in% batsman_scores$player){
-    #             batsman_scores[batsman_scores$player == row$player, "runs"] <- batsman_scores[batsman_scores$player == row$player, "runs"] + row$runs
-    #             batsman_scores[batsman_scores$player == row$player, "out"] <- batsman_scores[batsman_scores$player == row$player, "out"] + row$out
-    #             batsman_scores[batsman_scores$player == row$player, "balls"] <- batsman_scores[batsman_scores$player == row$player, "balls"] + row$balls
-    #     }
-    #     else{
-    #         batsman_scores <- rbind(batsman_scores, data.frame(player = row$player, runs = row$runs, out = row$out, balls = row$balls, country = row$country))
-    # }
-    # }
+        for(i in 1:nrow(batsman_bowler_data[[1]])){
+            row = batsman_bowler_data[[1]][i,]
+            row$runs = as.numeric(row$runs)
+            row$out = as.numeric(row$out)
+            row$balls = as.numeric(row$balls)
+            if(row$player %in% batsman_scores$player){
+                batsman_scores[batsman_scores$player == row$player, "runs"] <- batsman_scores[batsman_scores$player == row$player, "runs"] + row$runs
+                batsman_scores[batsman_scores$player == row$player, "out"] <- batsman_scores[batsman_scores$player == row$player, "out"] + row$out
+                batsman_scores[batsman_scores$player == row$player, "balls"] <- batsman_scores[batsman_scores$player == row$player, "balls"] + row$balls
+        }
+        else{
+            batsman_scores <- rbind(batsman_scores, data.frame(player = row$player, runs = row$runs, out = row$out, balls = row$balls, country = row$country, strike_rate =0, batting_average=0))
+    }
+    }
         for(i in 1:nrow(batsman_bowler_data[[2]])){
             row = batsman_bowler_data[[2]][i,]
             row$score = as.numeric(row$score)
@@ -51,9 +54,10 @@ for (year in year_folders[1:1]){
     }
     }
 }
-# print(batsman_scores)
 }
+
+print(batsman_scores)
 print(bowler_scores)
-#writing only 2003 data to csv
-# write.csv(batsman_scores, "D:/Minor_Project-II/Data/IND vs AUS/ODI/BatsmanScores.csv", row.names = FALSE)
+#writing data to csv
+write.csv(batsman_scores, "D:/Minor_Project-II/Data/IND vs AUS/ODI/BatsmanScores.csv", row.names = FALSE)
 write.csv(bowler_scores, "D:/Minor_Project-II/Data/IND vs AUS/ODI/BowlerStats.csv", row.names = FALSE)
