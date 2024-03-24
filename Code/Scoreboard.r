@@ -1,8 +1,12 @@
+ScoreBoard<- function(data){
+
 library(hash)
 
 # Read the CSV file
-df <- read.csv("/Users/morampudigopiprashanthraju/Desktop/DataScience/Minor_Project-II/Data/IND vs AUS/ODI/2003/CSVs/Conversion_demo.csv")
+# df <- read.csv("/Users/morampudigopiprashanthraju/Desktop/DataScience/Minor_Project-II/Data/IND vs AUS/ODI/2003/CSVs/Conversion_demo.csv")
+# df <- read.csv("D:/Minor_Project-II/Data/IND vs AUS/ODI/2003/CSVs/Conversion_demo.csv")
 
+df <- data
 # Create a hash table to store batsman data
 batsman <- hash()
 
@@ -43,6 +47,11 @@ for (i in 1:nrow(df)) {
 # Print the hash table
 h_df <- as.data.frame(t(sapply(batsman, unlist)))
 h_df2 <- data.frame(player = rownames(h_df), h_df, row.names = NULL)
-# write.csv(h_df, "/Users/morampudigopiprashanthraju/Desktop/DataScience/Minor_Project-II/Data/IND vs AUS/ODI/2003/players_details.csv", row.names = FALSE)
-write.csv(h_df, "/Users/morampudigopiprashanthraju/Desktop/DataScience/Minor_Project-II/Data/IND vs AUS/ODI/2003/Scoreboard.csv")
-#write.csv(h_df2, "D:/Minor_Project-II/Data/IND vs AUS/ODI/BowlerStats.csv", row.names = FALSE)
+return(h_df2)
+
+}
+# ScoreBoard(read.csv("D:/Minor_Project-II/Data/IND vs AUS/ODI/2003/CSVs/Conversion_demo.csv"))
+# print(h_df2)
+
+# write.csv(h_df, "D:/Minor_Project-II/Data/IND vs AUS/ODI/2003/CSVs/Scoreboard.csv")
+# write.csv(h_df, "/Users/morampudigopiprashanthraju/Desktop/DataScience/Minor_Project-II/Data/IND vs AUS/ODI/2003/Scoreboard.csv")
