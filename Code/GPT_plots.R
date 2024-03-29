@@ -4,17 +4,16 @@ library(ggplot2)
 library(plotly)
 
 # Read the dataset
-data <- read.csv("D:/Minor_Project-II/Data/IND vs AUS/ODI/BatsmanScores.csv")
+# data <- read.csv("D:/Minor_Project-II/Data/IND vs AUS/ODI/BowlerStats.csv")
 # print(data)
 # # 1. Violin Plot of Batting Averages and Bowling Averages
-p <- ggplot(data, aes(x = country, y = batting_average, fill = country)) +
-  geom_violin(trim = FALSE) +
-  labs(title = "Distribution of Batting Averages by Country") +
-  scale_fill_manual(values = c("Australia" = "yellow", "India" = "blue")) +  # Customize fill colors
-  theme_minimal()
+# p <- ggplot(data, aes(x = country, y = strike_rate, fill = country)) +
+#   geom_violin(trim = FALSE) +
+#   labs(title = "Distribution of Strike Rates by Country") +
+#   scale_fill_manual(values = c("Australia" = "yellow", "India" = "blue")) +  # Customize fill colors
+#   theme_minimal()
 
-# Print the plot
-print(p)
+# print(p)
 
 # ggplot(data, aes(x = country, y = economy, fill = country)) +
 #   geom_violin(trim = FALSE) +
@@ -49,13 +48,14 @@ print(p)
 # Create a ggplot object
 # p <- ggplot(data, aes(x = player, y = wickets, fill = country)) +
 #   geom_bar(stat = "identity", position = "dodge") +
-#   labs(title = "Wickets Taken by Player and Country", x = "Player", y = "Wickets") + # Add axis labels
+#   labs(title = "Wickets Taken by Player and Country", x = "Player", y = "Runs") +
+# scale_fill_manual(values = c("Australia" = "yellow", "India" = "blue")) +
 #   theme_minimal()
+ # Add axis labels
 
-# # # Convert the ggplot object to a plotly object
-# p <- ggplotly(p, tooltip = c("player", "wickets"))  # Set tooltip to show player's name and runs
+# Convert the ggplot object to a plotly object
+# p <- ggplotly(p, tooltip = c("player", "runs"))  # Set tooltip to show player's name and runs
 
-# # # Print the plot
 # print(p)
 
 
