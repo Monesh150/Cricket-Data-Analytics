@@ -1,57 +1,49 @@
-ScoreBoard<- function(data){
-
-library(hash)
-
-# Read the CSV file
-# df <- read.csv("/Users/morampudigopiprashanthraju/Desktop/DataScience/Minor_Project-II/Data/IND vs AUS/ODI/2003/CSVs/Conversion_demo.csv")
-# df <- read.csv("D:/Minor_Project-II/Data/IND vs AUS/ODI/2003/CSVs/Conversion_demo.csv")
-
-df <- data
-# Create a hash table to store batsman data
-batsman <- hash()
-
-# Loop through each row of the dataframe
-for (i in 1:nrow(df)) {
-  curr_row <- df[i,]
-  batter <- curr_row$batter
-  
-  # Check if batter exists in the hash table, if not, initialize the values
-  if (!(batter %in% names(batsman))) {
-    batsman[[batter]] <- list(runs = 0, balls = 0, fours = 0, sixes = 0, out = "Notout")
-  }
-  
-  # Update runs
-  batsman[[batter]][[1]] <- batsman[[batter]][[1]] + curr_row$runsperball
-  
-  # Update balls
-  if (!curr_row$extra) {
-    batsman[[batter]][[2]] <- batsman[[batter]][[2]] + 1
-  }
-  
-  # Update fours
-  if (curr_row$runsperball == 4) {
-    batsman[[batter]][[3]] <- batsman[[batter]][[3]] + 1
-  }
-  
-  # Update sixes
-  if (curr_row$runsperball == 6) {
-    batsman[[batter]][[4]] <- batsman[[batter]][[4]] + 1
-  }
-  
-  # Check if the batsman got out
-  if (curr_row$wickets) {
-    batsman[[batter]][[5]] <- curr_row$baller
-  }
+# Function to read a CSV file
+read_csv_file <- function(file_path) {
+  return(read.csv(file_path))
 }
 
-# Print the hash table
-h_df <- as.data.frame(t(sapply(batsman, unlist)))
-h_df2 <- data.frame(player = rownames(h_df), h_df, row.names = NULL)
-return(h_df2)
-
+# Function to trim leading and trailing spaces from player names
+trim_player_names <- function(df) {
+  df$player <- trimws(df$player)
+  return(df)
 }
-# ScoreBoard(read.csv("D:/Minor_Project-II/Data/IND vs AUS/ODI/2003/CSVs/Conversion_demo.csv"))
-# print(h_df2)
 
-# write.csv(h_df, "D:/Minor_Project-II/Data/IND vs AUS/ODI/2003/CSVs/Scoreboard.csv")
-# write.csv(h_df, "/Users/morampudigopiprashanthraju/Desktop/DataScience/Minor_Project-II/Data/IND vs AUS/ODI/2003/Scoreboard.csv")
+# Function to create hash tables for player names and their batting/bowling styles
+create_hash_tables <- function(df) {
+  batter <- hash()
+  bowler <- hash()
+  
+  for (i in 1:nrow(df)) {
+    batter[[df$player[i]]] <- df$batting[i]
+    bowler[[df$player[i]]] <- df$bowling[i]
+  }
+  
+  return(list(batter = batter, bowler = bowler))
+}
+
+# Function to get batting and bowling styles for each player from hash tables
+get_styles <- function(df, batter, bowler) {
+  batting_vector <- c()
+  bowling_vector <- c()
+  
+  for (i in 1:nrow(df)) {
+    row <- df[i, ]
+    batter_name <- trimws(as.character(row$batter))
+    bowler_name <- trimws(as.character(row$baller))
+    batting_style <- batter[[batter_name]]
+    bowling_style <- bowler[[bowler_name]]
+    batting_vector <- c(batting_vector, batting_style)
+    bowling_vector <- c(bowling_vector, bowling_style)
+  }
+  
+  return(list(batting_vector = batting_vector, bowling_vector = bowling_vector))
+}
+
+# Function to add batting and bowling styles vectors to dataframe and write back to CSV
+add_styles_to_dataframe <- function(df, batting_vector, bowling_vector, output_file) {
+  df$batter_style <- batting_vector
+  df$bowler_style <- bowling_vector
+  write.csv(df, output_file, row.names = FALSE)
+}
+
