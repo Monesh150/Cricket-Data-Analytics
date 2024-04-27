@@ -1,5 +1,6 @@
 # Read the data
-data <- read.csv("/Users/morampudigopiprashanthraju/Desktop/DataScience/Minor_Project-II/Data/Combined.csv")
+# data <- read.csv("/Users/morampudigopiprashanthraju/Desktop/DataScience/Minor_Project-II/Data/Combined.csv")
+data <- read.csv("D:/Minor_Project-II/Data/Combined.csv")
 
 # Select features
 selected_features <- c("batter_style", "wickets", "bowler_style")
@@ -16,12 +17,12 @@ y <- data$balls
 model <- lm(y ~ ., data = x)
 
 summary(model)
-# Predict using the trained model
+# Predict using the trained model for nth dismissal
 new_data <- data.frame(batter_style = 0, wickets = 1, bowler_style = 0)  # Example new data
 predicted_value <- predict(model, newdata = new_data)
 
 # Print the predicted value
 print(predicted_value)
 # Save the trained model to a file
-saveRDS(model, "/Users/morampudigopiprashanthraju/Desktop/DataScience/Minor_Project-II/Code/Model/trained_model.rds")
+saveRDS(model, "D:/Minor_Project-II/Code/Model/trained_model.rds")
 
