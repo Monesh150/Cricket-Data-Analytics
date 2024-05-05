@@ -2,7 +2,8 @@ library(randomForest)
 library(rpart)
 library(caret)
 
-df <- read.csv("/Users/morampudigopiprashanthraju/Desktop/DataScience/Minor_Project-II/Data/Combined.csv")
+# df <- read.csv("/Users/morampudigopiprashanthraju/Desktop/DataScience/Minor_Project-II/Data/Combined.csv")
+df <- read.csv("D:/Minor_Project-II/Data/Combined.csv")
 
 selected_features <- c("batter_style", "wickets", "bowler_style")
 x <- df[selected_features]
@@ -54,4 +55,5 @@ final_predictions <- predict(stack_model, newdata = new_predictions)
 
 print(final_predictions)
 
-saveRDS(stack_model, "/Users/morampudigopiprashanthraju/Desktop/DataScience/Minor_Project-II/Code/Model/hybrid_wicket_trained_model.rds")
+# saveRDS(stack_model, "/Users/morampudigopiprashanthraju/Desktop/DataScience/Minor_Project-II/Code/Model/hybrid_wicket_trained_model.rds")
+saveRDS(stack_model, "D:/Minor_Project-II/Code/Model/hybrid_wicket_trained_model.rds")
