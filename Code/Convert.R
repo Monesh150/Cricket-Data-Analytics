@@ -15,6 +15,8 @@ process_cricket_data <- function(jsonData) {
     return(data.frame())  # Return an empty data frame
   }
   balls <- 0
+  toss <- c()
+  match_winner <- c()
   flag <- TRUE
   batter_vector <- c()
   baller_vector <- c()

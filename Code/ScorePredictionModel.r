@@ -4,7 +4,8 @@ library(dplyr)
 library(caret)
 
 # Read the aggregated CSV file
-data <- read.csv("D:/Minor_Project-II/Data/Datasets/OverByOver/Aggregated.csv")
+# data <- read.csv("D:/Minor_Project-II/Data/Datasets/OverByOver/Aggregated.csv")
+data <- read.csv("D:/Minor_Project-II/Data/All India Matches/AllODI.csv")
 
 # Handle missing values
 data$required_run_rate[is.na(data$required_run_rate)] <- 0  # Substitute NA with 0 in required run rate
@@ -54,7 +55,7 @@ predictions <- predict(model, newdata = input_data)
 # Print predictions
 print(ceiling(predictions))
 
-saveRDS(model, "D:/Minor_Project-II/Code/Model/score_prediction_model.rds")
+# saveRDS(model, "D:/Minor_Project-II/Code/Model/score_prediction_model.rds")
 ###########################Hybrid-Model-Here#####################################
 # # Load necessary libraries
 # library(tidyr)
