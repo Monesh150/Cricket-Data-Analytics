@@ -1,0 +1,412 @@
+---
+title: "DSR_Assignment"
+author: '39,50,51'
+date: "2024-05-06"
+output:
+  html_document:
+    df_print: paged
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Conversion of json to Csv
+
+```{r tidy=TRUE}
+# Load required library
+library(jsonlite)
+
+# Defining function
+convert_to_csv <- function(file_path){
+  jsonData <- read_json(path = file_path)
+  # print(jsonData)
+  
+  # Initialize vectors and variables
+  balls <- 0
+  flag <- TRUE
+  batter_vector <- c()
+  baller_vector <- c()
+  balls_vector <- c()
+  runsperball_vector <- c()
+  extra_vector <- c()
+  country_vector <- c()
+  innings_vector <- c()
+  toss <- c()
+  toss_winner <- c()
+  innings <- c(1, 2)
+  toss_decision <- c()
+  match_winner <- c()
+  margin <- c()
+  total_score <- c()
+  wickets <- c()
+  cum_wickets <- 0
+  df <- data.frame(
+    baller = baller_vector,
+    batter = batter_vector,
+    balls = balls_vector,
+    runsperball = runsperball_vector,
+    extra = extra_vector,
+    total_score = total_score,
+    wickets = wickets,
+    country = country_vector,
+    innings = innings_vector,
+    toss_decision = toss_decision,
+    toss_winner = match_winner,
+    margin = margin,
+    match_winner = match_winner
+  )
+  
+  # Return empty dataframe if result is available
+  if (!is.null(jsonData$info$outcome$result)) {
+    return(df)
+  }
+  
+  # Loop through each innings
+  for (inn in innings) {
+    cummulative_score <- 0
+    flag <- TRUE
+    balls <- 0
+    cumm_wickets <- 0
+    
+    # Loop through overs
+    while (balls <= 300 && flag) {
+      tryCatch({
+        over_index <- balls %/% 6 + 1
+        if (over_index > length(jsonData$innings[[inn]]$overs)) {
+          flag <- FALSE
+          break
+        }
+        
+        # Initialize variables for each over
+        over_balls <- length(jsonData$innings[[inn]]$overs[[over_index]]$deliveries)
+        currball <- 1
+        extras_count <- 0
+        
+        # Loop through each ball
+        while (currball <= over_balls) {
+          ball_index <- (balls %/% 6) * 6 + currball
+          
+          toss <- c(toss, jsonData$info$toss$winner)
+          match_winner <- c(match_winner, jsonData$info$outcome$winner)
+          
+          batter <- jsonData$innings[[inn]]$overs[[over_index]]$deliveries[[currball]]$batter
+          bowler <- jsonData$innings[[inn]]$overs[[over_index]]$deliveries[[currball]]$bowler
+          runs <- jsonData$innings[[inn]]$overs[[over_index]]$deliveries[[currball]]$runs$batter 
+          
+          team <- jsonData$innings[[inn]]$team
+          
+          batter_vector <- c(batter_vector, batter)
+          baller_vector <- c(baller_vector, bowler)
+          balls_vector <- c(balls_vector, balls %/% 6 + 0.1 * (currball - extras_count))
+          
+          # Update cumulative score
+          cummulative_score <- cummulative_score + jsonData$innings[[inn]]$overs[[over_index]]$deliveries[[currball]]$runs$total
+          
+          # Update vectors
+          runsperball_vector <- c(runsperball_vector, runs)
+          country_vector <- c(country_vector, team)
+          innings_vector <- c(innings_vector, inn)
+          toss_winner <- c(toss_winner, toss)
+          
+          # Update toss decision
+          toss_decision <- c(toss_decision, jsonData$info$toss$decision)
+          
+          # Check for extras
+          if (!is.null(jsonData$innings[[inn]]$overs[[over_index]]$deliveries[[currball]]$extras)) {
+            if (is.null(jsonData$innings[[inn]]$overs[[over_index]]$deliveries[[currball]]$extras$legbyes)) {
+              extras_count <- extras_count + 1
+            }
+            extra_vector <- c(extra_vector, TRUE)
+          } else {
+            extra_vector <- c(extra_vector, FALSE)
+          }
+          
+          # Update match outcome
+          if (!is.null(jsonData$info$outcome$by$wickets)) {
+            margin <- c(margin, paste(jsonData$info$outcome$by$wickets, " wickets"))
+          } else {
+            margin <- c(margin, paste(jsonData$info$outcome$by$wickets, " runs"))
+          }
+          
+          total_score <- c(total_score, cummulative_score)
+          
+          # Update wickets
+          if (!is.null(jsonData$innings[[inn]]$overs[[over_index]]$deliveries[[currball]]$wickets)) {
+            cum_wickets <- cum_wickets + 1
+            wickets <- c(wickets, cum_wickets)
+          } else {
+            wickets <- c(wickets, 0)
+          }
+          
+          currball <- currball + 1
+        }
+        
+        balls <- balls + 6
+        
+      }, error = function(e) {
+        flag <- FALSE
+      })
+    }
+  }
+  
+  # Create dataframe
+  df <- data.frame(
+    baller = baller_vector,
+    batter = batter_vector,
+    balls = balls_vector,
+    runsperball = runsperball_vector,
+    extra = extra_vector,
+    total_score = total_score,
+    wickets = wickets,
+    country = country_vector,
+    innings = innings_vector,
+    toss_decision = toss_decision,
+    toss_winner = match_winner,
+    margin = margin,
+    match_winner = match_winner
+  )
+  
+  return(df)
+}
+
+```
+
+## KDE plots for comparission of teams
+
+
+```{r, echo=TRUE,tidy=TRUE,warning=FALSE,message=FALSE}
+library(ggplot2)
+library(gridExtra)
+library(dplyr)
+data_path <- "/Users/morampudigopiprashanthraju/Desktop/DataScience/Minor_Project-II/Data/IND vs AUS/ODI/BowlerStats.csv"
+data <- read.csv(data_path)
+
+# Initialize empty data frames for storing the data for different countries
+aus_players_economy <- data.frame(economy = numeric())
+aus_players_bowling_avg <- data.frame(bowling_avg = numeric())
+ind_players_economy <- data.frame(economy = numeric())
+ind_players_bowling_avg <- data.frame(bowling_avg = numeric())
+
+# Separate data for each country
+for (i in 1:nrow(data)) {
+    if (data$country[i] == "Australia") {
+        aus_players_economy <- rbind(aus_players_economy, data.frame(economy = data$economy[i]))
+        aus_players_bowling_avg <- rbind(aus_players_bowling_avg, data.frame(bowling_avg = data$bowling_average[i]))
+    } else {
+        ind_players_economy <- rbind(ind_players_economy, data.frame(economy = data$economy[i]))
+        ind_players_bowling_avg <- rbind(ind_players_bowling_avg, data.frame(bowling_avg = data$bowling_average[i]))
+    }
+}
+
+# Add group labels
+aus_players_economy$Group <- "Australia"
+ind_players_economy$Group <- "India"
+combined_economy_data <- rbind(aus_players_economy, ind_players_economy)
+
+aus_players_bowling_avg$Group <- "Australia"
+ind_players_bowling_avg$Group <- "India"
+combined_bowling_avg_data <- rbind(aus_players_bowling_avg, ind_players_bowling_avg)
+# KDE plot of economies
+economy_plot <- ggplot(combined_economy_data, aes(x = economy, fill = Group, color = Group)) +
+    geom_density(alpha = 0.7) +
+    labs(title = "Kernel Density Estimation Plot of Economies",
+         x = "Economy",
+         y = "Density") +
+    scale_fill_manual(values = c("Australia" = "yellow", "India" = "blue")) +
+    scale_color_manual(values = c("Australia" = "yellow", "India" = "blue")) +
+    theme_minimal()
+
+# KDE plot of bowling averages
+bowling_avg_plot <- ggplot(combined_bowling_avg_data, aes(x = bowling_avg, fill = Group, color = Group)) +
+    geom_density(alpha = 0.7) +
+    labs(title = "Kernel Density Estimation Plot of Bowling Averages",
+         x = "Bowling Average",
+         y = "Density") +
+    scale_fill_manual(values = c("Australia" = "yellow", "India" = "blue")) +
+    scale_color_manual(values = c("Australia" = "yellow", "India" = "blue")) +
+    theme_minimal()
+
+# Load additional data
+strike_rate_path <- "/Users/morampudigopiprashanthraju/Desktop/DataScience/Minor_Project-II/Data/IND vs AUS/ODI/BatsmanScores.csv"
+data_strike_rate <- read.csv(strike_rate_path)
+
+aus_players_strike_rate <- data.frame(strike_rate = numeric())
+aus_players_batting_avg <- data.frame(batting_avg = numeric())
+ind_players_strike_rate <- data.frame(strike_rate = numeric())
+ind_players_batting_avg <- data.frame(batting_avg = numeric())
+
+for (i in 1:nrow(data_strike_rate)) {
+    if (data_strike_rate$country[i] == "Australia") {
+        aus_players_strike_rate <- rbind(aus_players_strike_rate, data.frame(strike_rate = data_strike_rate$strike_rate[i]))
+        aus_players_batting_avg <- rbind(aus_players_batting_avg, data.frame(batting_avg = data_strike_rate$batting_average[i]))
+    } else {
+        ind_players_strike_rate <- rbind(ind_players_strike_rate, data.frame(strike_rate = data_strike_rate$strike_rate[i]))
+        ind_players_batting_avg <- rbind(ind_players_batting_avg, data.frame(batting_avg = data_strike_rate$batting_average[i]))
+    }
+}
+
+# Add group labels
+aus_players_strike_rate$Group <- "Australia"
+ind_players_strike_rate$Group <- "India"
+combined_strike_rate_data <- rbind(aus_players_strike_rate, ind_players_strike_rate)
+
+aus_players_batting_avg$Group <- "Australia"
+ind_players_batting_avg$Group <- "India"
+combined_batting_avg_data <- rbind(aus_players_batting_avg, ind_players_batting_avg)
+
+# KDE plot of strike rates
+strike_rate_plot <- ggplot(combined_strike_rate_data, aes(x = strike_rate, fill = Group, color = Group)) +
+    geom_density(alpha = 0.7) +
+    labs(title = "Kernel Density Estimation Plot of Strike Rates",
+         x = "Strike Rate",
+         y = "Density") +
+    scale_fill_manual(values = c("Australia" = "yellow", "India" = "blue")) +
+    scale_color_manual(values = c("Australia" = "yellow", "India" = "blue")) +
+    theme_minimal()
+
+# KDE plot of batting averages
+batting_avg_plot <- ggplot(combined_batting_avg_data, aes(x = batting_avg, fill = Group, color = Group)) +
+    geom_density(alpha = 0.7) +
+    labs(title = "Kernel Density Estimation Plot of Batting Averages",
+         x = "Batting Average",
+         y = "Density") +
+    scale_fill_manual(values = c("Australia" = "yellow", "India" = "blue")) +
+    scale_color_manual(values = c("Australia" = "yellow", "India" = "blue")) +
+    theme_minimal()
+
+# Combine the plots into a 2x2 grid layout
+print(economy_plot)
+print(bowling_avg_plot)
+print(strike_rate_plot)
+print(batting_avg_plot)
+
+```
+## KDE plots for bowler comparissions
+
+
+```{r echo=TRUE,echo=TRUE,tidy=TRUE,warning=FALSE,message=FALSE}
+# Load necessary libraries
+library(ggplot2)
+library(plotly)
+
+# Load the data
+data_path <- "/Users/morampudigopiprashanthraju/Desktop/DataScience/Minor_Project-II/Data/IND vs AUS/ODI/BowlerStats.csv"
+data <- read.csv(data_path)
+# Create the ggplot object
+p <- ggplot(data, aes(x = player, y = wickets, fill = country)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  labs(title = "Wickets Taken by Player and Country", x = "Player", y = "Wickets") +
+  scale_fill_manual(values = c("Australia" = "yellow", "India" = "blue")) +
+  theme_minimal() +
+  theme(axis.text.x = element_blank())  # Hide x-axis labels
+
+# Convert the ggplot object to a plotly object
+p_plotly <- ggplotly(p, tooltip = c("player", "wickets"))
+
+# Print the plotly object
+p_plotly
+# Create the bubble chart
+bubble_chart <- plot_ly(data, x = ~score, y = ~wickets, size = ~economy,
+        color = ~country, text = ~player, hoverinfo = "text",
+        mode = "markers", type = "scatter") %>%
+  layout(title = "Bubble Chart of Bowler Performance Metrics",
+         xaxis = list(title = "Runs Conceded"),
+         yaxis = list(title = "Wickets"),
+         showlegend = TRUE)
+
+# Print the bubble chart
+bubble_chart
+
+```
+{r}
+##Model Building 
+## Stacking Models for Cricket Analysis
+
+This code cell demonstrates how to use a stacked model for predicting the number of balls bowled in a cricket match, based on a set of features such as batter style, bowler style, and the number of wickets taken.
+
+```{r message=FALSE, warning=FALSE, pressure, echo=TRUE, tidy=TRUE}
+
+# Load necessary libraries
+# Load necessary libraries
+options(warn=-1)
+library(randomForest)
+library(rpart)
+library(caret)
+
+# Load the data from the specified file path
+df <- read.csv("/Users/morampudigopiprashanthraju/Desktop/DataScience/Minor_Project-II/Data/Combined.csv")
+
+# Select the features for the model and preprocess the data
+selected_features <- c("batter_style", "wickets", "bowler_style")
+x <- df[selected_features]
+
+# Convert categorical variables to binary encoding
+x$batter_style <- ifelse(x$batter_style == "right", 0, 1)
+x$bowler_style <- ifelse(x$bowler_style == "fast", 0, 1)
+
+# Define the target variable (response)
+y <- df$balls
+
+# Train different models using caret
+models <- list(
+  linear_reg = caret::train(x, y, method = "lm"),
+  rf_model = caret::train(x, y, method = "rf"),
+  xgboost = caret::train(x, y, method = "xgbTree")
+)
+
+# Make predictions with each trained model
+predictions <- suppressWarnings({
+  data.frame(
+    linear_reg = predict(models$linear_reg, newdata = x),
+    rf_model = predict(models$rf_model, newdata = x),
+    xgboost = predict(models$xgboost, newdata = x, iteration_range = c(1, models$xgboost$bestTune$nrounds))
+  )
+})
+
+# Train a stacking model using the predictions as features
+stack_model <- caret::train(
+  x = predictions,
+  y = y,
+  method = "lm"
+)
+
+# Make predictions with the stacked model
+stacked_predictions <- predict(stack_model, newdata = predictions)
+
+# Calculate error metrics (Mean Absolute Error and Root Mean Squared Error)
+mae <- mean(abs(y - stacked_predictions))
+rmse <- sqrt(mean((y - stacked_predictions)^2))
+
+# Print the error metrics
+cat("Stacked Model MAE:", mae, "\n")
+cat("Stacked Model RMSE:", rmse, "\n")
+
+# Create new data for making predictions
+new_data <- data.frame(
+  batter_style = 0,
+  wickets = 1,
+  bowler_style = 0
+)
+
+# Make predictions using each model for the new data
+new_predictions <- suppressWarnings({
+  data.frame(
+    linear_reg = predict(models$linear_reg, newdata = new_data),
+    rf_model = predict(models$rf_model, newdata = new_data),
+    xgboost = predict(models$xgboost, newdata = new_data, iteration_range = c(1, models$xgboost$bestTune$nrounds))
+  )
+})
+
+# Make final predictions using the stacked model
+final_predictions <- predict(stack_model, newdata = new_predictions)
+
+# Print the final predictions
+print(final_predictions)
+
+# Save the stacked model for future use
+saveRDS(stack_model, "/Users/morampudigopiprashanthraju/Desktop/DataScience/Minor_Project-II/Code/Model/hybrid_wicket_trained_model.rds")
+
+```
+{r}

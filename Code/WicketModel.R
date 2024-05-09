@@ -1,6 +1,6 @@
 # Read the data
-# data <- read.csv("/Users/morampudigopiprashanthraju/Desktop/DataScience/Minor_Project-II/Data/Combined.csv")
-data <- read.csv("D:/Minor_Project-II/Data/Combined.csv")
+data <- read.csv("/Users/morampudigopiprashanthraju/Desktop/DataScience/Minor_Project-II/Data/Combined.csv")
+# data <- read.csv("D:/Minor_Project-II/Data/Combined.csv")
 
 # Select features
 selected_features <- c("batter_style", "wickets", "bowler_style")
@@ -24,5 +24,4 @@ predicted_value <- predict(model, newdata = new_data)
 # Print the predicted value
 print(predicted_value)
 # Save the trained model to a file
-saveRDS(model, "D:/Minor_Project-II/Code/Model/trained_model.rds")
-
+# saveRDS(model, "D:/Minor_Project-II/Code/Model/trained_model.rds")
