@@ -14,7 +14,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Conversion of json to Csv
 
-```{r tidy=TRUE}
+```{r}
 # Load required library
 library(jsonlite)
 
