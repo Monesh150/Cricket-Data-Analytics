@@ -3,17 +3,17 @@ base_dir = "D:/Minor_Project-II/Data/All India Matches/T20I"
 json_files = list.files(base_dir)
 
 #create the batsman dataframe here
-batsman_data = data.frame(
-    player = character(),
-    runs = integer(),
-    balls = integer(),
-    fours = integer(),
-    sixes = integer(),
-    batting_average = numeric(),
-    strike_rate = numeric(),
-    matches_played = integer(),
-    dismissals = integer()
-)
+# batsman_data = data.frame(
+#     player = character(),
+#     runs = integer(),
+#     balls = integer(),
+#     fours = integer(),
+#     sixes = integer(),
+#     batting_average = numeric(),
+#     strike_rate = numeric(),
+#     matches_played = integer(),
+#     dismissals = integer()
+# )
 
 
 ## for batsaman data
@@ -88,7 +88,8 @@ bowler_data = data.frame(
     balls = integer(),
     wickets = integer(),
     economy = numeric(),
-    matches_played = integer()
+    matches_played = integer(),
+    dot_balls = integer()
 )
 
 for(file in json_files){
@@ -100,7 +101,7 @@ for(file in json_files){
             index = which(bowler_data$player == player)
             bowler_data$matches_played[index] = bowler_data$matches_played[index] + 1
         }else{
-            bowler_data = rbind(bowler_data, data.frame(player = player, runs = 0, balls = 0, wickets = 0, economy = 0, matches_played = 1))
+            bowler_data = rbind(bowler_data, data.frame(player = player, runs = 0, balls = 0, wickets = 0, economy = 0, matches_played = 1,dot_balls = 0))
         }
     }
     if (data$innings[[1]]$team != "India") {
@@ -119,6 +120,9 @@ for(file in json_files){
                     index = which(bowler_data$player == player)
                     bowler_data$runs[index] = bowler_data$runs[index] + ball$runs$total
                     bowler_data$balls[index] = bowler_data$balls[index] + 1
+                    if (ball$runs$total == 0){
+                        bowler_data$dot_balls[index] = bowler_data$dot_balls[index] + 1
+                    }
                     if(!is.null(ball$wickets)){
                         if(ball$wickets[[1]]$kind != "run out"){
                         bowler_data$wickets[index] = bowler_data$wickets[index] + 1
@@ -142,4 +146,4 @@ bowler_data$overs = bowler_data$balls/6
 bowler_data$overs = round(bowler_data$overs, 0)
 print(bowler_data)
 
-write.csv(bowler_data, "D:/Minor_Project-II/Data/All India Matches/T20_bowler_data.csv", row.names = FALSE)
+# write.csv(bowler_data, "D:/Minor_Project-II/Data/All India Matches/T20_bowler_data.csv", row.names = FALSE)
