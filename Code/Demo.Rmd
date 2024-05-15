@@ -180,7 +180,7 @@ convert_to_csv <- function(file_path){
 library(ggplot2)
 library(gridExtra)
 library(dplyr)
-data_path <- "/Users/morampudigopiprashanthraju/Desktop/DataScience/Minor_Project-II/Data/IND vs AUS/ODI/BowlerStats.csv"
+data_path <- "D:/Minor_Project-II/Data/IND vs AUS/ODI/BowlerStats.csv"
 data <- read.csv(data_path)
 
 # Initialize empty data frames for storing the data for different countries
@@ -229,7 +229,7 @@ bowling_avg_plot <- ggplot(combined_bowling_avg_data, aes(x = bowling_avg, fill 
     theme_minimal()
 
 # Load additional data
-strike_rate_path <- "/Users/morampudigopiprashanthraju/Desktop/DataScience/Minor_Project-II/Data/IND vs AUS/ODI/BatsmanScores.csv"
+strike_rate_path <- "D:/Minor_Project-II/Data/IND vs AUS/ODI/BatsmanScores.csv"
 data_strike_rate <- read.csv(strike_rate_path)
 
 aus_players_strike_rate <- data.frame(strike_rate = numeric())
@@ -292,7 +292,7 @@ library(ggplot2)
 library(plotly)
 
 # Load the data
-data_path <- "/Users/morampudigopiprashanthraju/Desktop/DataScience/Minor_Project-II/Data/IND vs AUS/ODI/BowlerStats.csv"
+data_path <- "D:/Minor_Project-II/Data/IND vs AUS/ODI/BowlerStats.csv"
 data <- read.csv(data_path)
 # Create the ggplot object
 p <- ggplot(data, aes(x = player, y = wickets, fill = country)) +
@@ -326,7 +326,7 @@ bubble_chart
 
 This code cell demonstrates how to use a stacked model for predicting the number of balls bowled in a cricket match, based on a set of features such as batter style, bowler style, and the number of wickets taken.
 
-```{r message=FALSE, warning=FALSE, pressure, echo=TRUE, tidy=TRUE}
+```{r eval=FALSE, echo=TRUE, tidy=TRUE}
 
 # Load necessary libraries
 # Load necessary libraries
@@ -336,7 +336,7 @@ library(rpart)
 library(caret)
 
 # Load the data from the specified file path
-df <- read.csv("/Users/morampudigopiprashanthraju/Desktop/DataScience/Minor_Project-II/Data/Combined.csv")
+df <- read.csv("D:/Minor_Project-II/Data/Combined.csv")
 
 # Select the features for the model and preprocess the data
 selected_features <- c("batter_style", "wickets", "bowler_style")
@@ -406,7 +406,7 @@ final_predictions <- predict(stack_model, newdata = new_predictions)
 print(final_predictions)
 
 # Save the stacked model for future use
-saveRDS(stack_model, "/Users/morampudigopiprashanthraju/Desktop/DataScience/Minor_Project-II/Code/Model/hybrid_wicket_trained_model.rds")
+saveRDS(stack_model, "D:/Minor_Project-II/Code/Model/hybrid_wicket_trained_model.rds")
 
 ```
 {r}
