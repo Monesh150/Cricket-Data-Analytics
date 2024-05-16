@@ -1,0 +1,670 @@
+---
+title: "DSR Assignment II"
+author: 'Roll No.s: 39,50,51'
+date: "2024-05-16"
+output:
+  word_document: default
+  html_document:
+    css: style.css
+    df_print: paged
+  pdf_document: default
+---
+<div style="text-align: center;font-weight:800;"><h2>Title: Cricket Data Analytics<h2></div>
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Conversion of json to csv
+
+```{r tidy=TRUE}
+# Load required library
+library(jsonlite)
+
+# Defining function
+convert_to_csv <- function(file_path){
+  jsonData <- read_json(path = file_path)
+  # print(jsonData)
+
+  # Initialize vectors and variables
+  balls <- 0
+  flag <- TRUE
+  batter_vector <- c()
+  baller_vector <- c()
+  balls_vector <- c()
+  runsperball_vector <- c()
+  extra_vector <- c()
+  country_vector <- c()
+  innings_vector <- c()
+  toss <- c()
+  toss_winner <- c()
+  innings <- c(1, 2)
+  toss_decision <- c()
+  match_winner <- c()
+  margin <- c()
+  total_score <- c()
+  wickets <- c()
+  cum_wickets <- 0
+  df <- data.frame(
+    baller = baller_vector,
+    batter = batter_vector,
+    balls = balls_vector,
+    runsperball = runsperball_vector,
+    extra = extra_vector,
+    total_score = total_score,
+    wickets = wickets,
+    country = country_vector,
+    innings = innings_vector,
+    toss_decision = toss_decision,
+    toss_winner = match_winner,
+    margin = margin,
+    match_winner = match_winner
+  )
+
+  # Return empty dataframe if result is available
+  if (!is.null(jsonData$info$outcome$result)) {
+    return(df)
+  }
+
+  # Loop through each innings
+  for (inn in innings) {
+    cummulative_score <- 0
+    flag <- TRUE
+    balls <- 0
+    cumm_wickets <- 0
+
+    # Loop through overs
+    while (balls <= 300 && flag) {
+      tryCatch({
+        over_index <- balls %/% 6 + 1
+        if (over_index > length(jsonData$innings[[inn]]$overs)) {
+          flag <- FALSE
+          break
+        }
+
+        # Initialize variables for each over
+        over_balls <- length(jsonData$innings[[inn]]$overs[[over_index]]$deliveries)
+        currball <- 1
+        extras_count <- 0
+
+        # Loop through each ball
+        while (currball <= over_balls) {
+          ball_index <- (balls %/% 6) * 6 + currball
+
+          toss <- c(toss, jsonData$info$toss$winner)
+          match_winner <- c(match_winner, jsonData$info$outcome$winner)
+
+          batter <- jsonData$innings[[inn]]$overs[[over_index]]$deliveries[[currball]]$batter
+          bowler <- jsonData$innings[[inn]]$overs[[over_index]]$deliveries[[currball]]$bowler
+          runs <- jsonData$innings[[inn]]$overs[[over_index]]$deliveries[[currball]]$runs$batter
+
+          team <- jsonData$innings[[inn]]$team
+
+          batter_vector <- c(batter_vector, batter)
+          baller_vector <- c(baller_vector, bowler)
+          balls_vector <- c(balls_vector, balls %/% 6 + 0.1 * (currball - extras_count))
+
+          # Update cumulative score
+          cummulative_score <- cummulative_score + jsonData$innings[[inn]]$overs[[over_index]]$deliveries[[currball]]$runs$total
+
+          # Update vectors
+          runsperball_vector <- c(runsperball_vector, runs)
+          country_vector <- c(country_vector, team)
+          innings_vector <- c(innings_vector, inn)
+          toss_winner <- c(toss_winner, toss)
+
+          # Update toss decision
+          toss_decision <- c(toss_decision, jsonData$info$toss$decision)
+
+          # Check for extras
+          if (!is.null(jsonData$innings[[inn]]$overs[[over_index]]$deliveries[[currball]]$extras)) {
+            if (is.null(jsonData$innings[[inn]]$overs[[over_index]]$deliveries[[currball]]$extras$legbyes)) {
+              extras_count <- extras_count + 1
+            }
+            extra_vector <- c(extra_vector, TRUE)
+          } else {
+            extra_vector <- c(extra_vector, FALSE)
+          }
+
+          # Update match outcome
+          if (!is.null(jsonData$info$outcome$by$wickets)) {
+            margin <- c(margin, paste(jsonData$info$outcome$by$wickets, " wickets"))
+          } else {
+            margin <- c(margin, paste(jsonData$info$outcome$by$wickets, " runs"))
+          }
+
+          total_score <- c(total_score, cummulative_score)
+
+          # Update wickets
+          if (!is.null(jsonData$innings[[inn]]$overs[[over_index]]$deliveries[[currball]]$wickets)) {
+            cum_wickets <- cum_wickets + 1
+            wickets <- c(wickets, cum_wickets)
+          } else {
+            wickets <- c(wickets, 0)
+          }
+
+          currball <- currball + 1
+        }
+
+        balls <- balls + 6
+
+      }, error = function(e) {
+        flag <- FALSE
+      })
+    }
+  }
+
+  # Create dataframe
+  df <- data.frame(
+    baller = baller_vector,
+    batter = batter_vector,
+    balls = balls_vector,
+    runsperball = runsperball_vector,
+    extra = extra_vector,
+    total_score = total_score,
+    wickets = wickets,
+    country = country_vector,
+    innings = innings_vector,
+    toss_decision = toss_decision,
+    toss_winner = match_winner,
+    margin = margin,
+    match_winner = match_winner
+  )
+
+  return(df)
+}
+
+```
+
+## KDE plots for comparision of teams in various aspects
+
+```{r, echo=TRUE,tidy=TRUE,warning=FALSE,message=FALSE}
+library(ggplot2)
+library(gridExtra)
+library(dplyr)
+data_path <- "D:/Minor_Project-II/Data/IND vs AUS/ODI/BowlerStats.csv"
+data <- read.csv(data_path)
+
+# Initialize empty data frames for storing the data for different countries
+aus_players_economy <- data.frame(economy = numeric())
+aus_players_bowling_avg <- data.frame(bowling_avg = numeric())
+ind_players_economy <- data.frame(economy = numeric())
+ind_players_bowling_avg <- data.frame(bowling_avg = numeric())
+
+# Separate data for each country
+for (i in 1:nrow(data)) {
+    if (data$country[i] == "Australia") {
+        aus_players_economy <- rbind(aus_players_economy, data.frame(economy = data$economy[i]))
+        aus_players_bowling_avg <- rbind(aus_players_bowling_avg, data.frame(bowling_avg = data$bowling_average[i]))
+    } else {
+        ind_players_economy <- rbind(ind_players_economy, data.frame(economy = data$economy[i]))
+        ind_players_bowling_avg <- rbind(ind_players_bowling_avg, data.frame(bowling_avg = data$bowling_average[i]))
+    }
+}
+
+# Add group labels
+aus_players_economy$Group <- "Australia"
+ind_players_economy$Group <- "India"
+combined_economy_data <- rbind(aus_players_economy, ind_players_economy)
+
+aus_players_bowling_avg$Group <- "Australia"
+ind_players_bowling_avg$Group <- "India"
+combined_bowling_avg_data <- rbind(aus_players_bowling_avg, ind_players_bowling_avg)
+# KDE plot of economies
+economy_plot <- ggplot(combined_economy_data, aes(x = economy, fill = Group, color = Group)) +
+    geom_density(alpha = 0.7) +
+    labs(title = "Kernel Density Estimation Plot of Economies",
+         x = "Economy",
+         y = "Density") +
+    scale_fill_manual(values = c("Australia" = "yellow", "India" = "blue")) +
+    scale_color_manual(values = c("Australia" = "yellow", "India" = "blue")) +
+    theme_minimal()
+
+# KDE plot of bowling averages
+bowling_avg_plot <- ggplot(combined_bowling_avg_data, aes(x = bowling_avg, fill = Group, color = Group)) +
+    geom_density(alpha = 0.7) +
+    labs(title = "Kernel Density Estimation Plot of Bowling Averages",
+         x = "Bowling Average",
+         y = "Density") +
+    scale_fill_manual(values = c("Australia" = "yellow", "India" = "blue")) +
+    scale_color_manual(values = c("Australia" = "yellow", "India" = "blue")) +
+    theme_minimal()
+
+# Load additional data
+strike_rate_path <- "D:/Minor_Project-II/Data/IND vs AUS/ODI/BatsmanScores.csv"
+data_strike_rate <- read.csv(strike_rate_path)
+
+aus_players_strike_rate <- data.frame(strike_rate = numeric())
+aus_players_batting_avg <- data.frame(batting_avg = numeric())
+ind_players_strike_rate <- data.frame(strike_rate = numeric())
+ind_players_batting_avg <- data.frame(batting_avg = numeric())
+
+for (i in 1:nrow(data_strike_rate)) {
+    if (data_strike_rate$country[i] == "Australia") {
+        aus_players_strike_rate <- rbind(aus_players_strike_rate, data.frame(strike_rate = data_strike_rate$strike_rate[i]))
+        aus_players_batting_avg <- rbind(aus_players_batting_avg, data.frame(batting_avg = data_strike_rate$batting_average[i]))
+    } else {
+        ind_players_strike_rate <- rbind(ind_players_strike_rate, data.frame(strike_rate = data_strike_rate$strike_rate[i]))
+        ind_players_batting_avg <- rbind(ind_players_batting_avg, data.frame(batting_avg = data_strike_rate$batting_average[i]))
+    }
+}
+
+# Add group labels
+aus_players_strike_rate$Group <- "Australia"
+ind_players_strike_rate$Group <- "India"
+combined_strike_rate_data <- rbind(aus_players_strike_rate, ind_players_strike_rate)
+
+aus_players_batting_avg$Group <- "Australia"
+ind_players_batting_avg$Group <- "India"
+combined_batting_avg_data <- rbind(aus_players_batting_avg, ind_players_batting_avg)
+
+# KDE plot of strike rates
+strike_rate_plot <- ggplot(combined_strike_rate_data, aes(x = strike_rate, fill = Group, color = Group)) +
+    geom_density(alpha = 0.7) +
+    labs(title = "Kernel Density Estimation Plot of Strike Rates",
+         x = "Strike Rate",
+         y = "Density") +
+    scale_fill_manual(values = c("Australia" = "yellow", "India" = "blue")) +
+    scale_color_manual(values = c("Australia" = "yellow", "India" = "blue")) +
+    theme_minimal()
+
+# KDE plot of batting averages
+batting_avg_plot <- ggplot(combined_batting_avg_data, aes(x = batting_avg, fill = Group, color = Group)) +
+    geom_density(alpha = 0.7) +
+    labs(title = "Kernel Density Estimation Plot of Batting Averages",
+         x = "Batting Average",
+         y = "Density") +
+    scale_fill_manual(values = c("Australia" = "yellow", "India" = "blue")) +
+    scale_color_manual(values = c("Australia" = "yellow", "India" = "blue")) +
+    theme_minimal()
+
+# Combine the plots into a 2x2 grid layout
+print(economy_plot)
+print(bowling_avg_plot)
+print(strike_rate_plot)
+print(batting_avg_plot)
+
+```
+
+## Interactive Bar plots for bowler comparisions
+
+```{r echo=TRUE,echo=TRUE,tidy=TRUE,warning=FALSE,message=FALSE}
+# Load necessary libraries
+library(ggplot2)
+library(plotly)
+
+# Load the data
+data_path <- "D:/Minor_Project-II/Data/IND vs AUS/ODI/BowlerStats.csv"
+data <- read.csv(data_path)
+# Create the ggplot object
+p <- ggplot(data, aes(x = player, y = wickets, fill = country)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  labs(title = "Wickets Taken by Player and Country", x = "Player", y = "Wickets") +
+  scale_fill_manual(values = c("Australia" = "yellow", "India" = "blue")) +
+  theme_minimal() +
+  theme(axis.text.x = element_blank())  # Hide x-axis labels
+
+# Convert the ggplot object to a plotly object
+p_plotly <- ggplotly(p, tooltip = c("player", "wickets"))
+
+# Print the plotly object
+p_plotly
+# Create the bubble chart
+bubble_chart <- plot_ly(data, x = ~score, y = ~wickets, size = ~economy,
+        color = ~country, text = ~player, hoverinfo = "text",
+        mode = "markers", type = "scatter") %>%
+  layout(title = "Bubble Chart of Bowler Performance Metrics",
+         xaxis = list(title = "Runs Conceded"),
+         yaxis = list(title = "Wickets"),
+         showlegend = TRUE)
+
+# Print the bubble chart
+bubble_chart
+```
+
+## Stacking Models for Wicket Analysis
+```{r echo=FALSE,eval=FALSE,message=FALSE,warning=FALSE}
+# Load necessary libraries
+library(randomForest)
+library(rpart)
+library(caret)
+library(ggplot2)
+
+# Load the data from the specified file path
+df <- read.csv("D:/Minor_Project-II/Data/Combined.csv")
+
+# Select the features for the model and preprocess the data
+selected_features <- c("batter_style", "wickets", "bowler_style")
+x <- df[selected_features]
+
+# Convert categorical variables to binary encoding
+x$batter_style <- ifelse(x$batter_style == "right", 0, 1)
+x$bowler_style <- ifelse(x$bowler_style == "fast", 0, 1)
+
+# Define the target variable (response)
+y <- df$balls
+
+# Train different models using caret
+# Train different models using caret
+# Train different models using caret
+models <- list(
+  linear_reg = suppressMessages(caret::train(x, y, method = "lm")),
+  rf_model = suppressMessages(caret::train(x, y, method = "rf")),
+  xgboost = suppressMessages(caret::train(x, y, method = "xgbTree"))
+)
+
+# Make predictions with each trained model
+predictions <- suppressWarnings({
+  data.frame(
+    linear_reg = predict(models$linear_reg, newdata = x),
+    rf_model = predict(models$rf_model, newdata = x),
+    xgboost = predict(models$xgboost, newdata = x, iteration_range = c(1, models$xgboost$bestTune$nrounds))
+  )
+})
+
+# Train a stacking model using the predictions as features
+stack_model <- caret::train(
+  x = predictions,
+  y = y,
+  method = "lm"
+)
+saveRDS(stack_model, "D:/Minor_Project-II/Code/Model/hybrid_wicket_trained_model.rds")
+saveRDS(models, "D:/Minor_Project-II/Code/Model/models.rds")
+# Make predictions with the stacked model
+```
+````{r tidy=TRUE}
+# Calculate error metrics for each model
+df <- read.csv("D:/Minor_Project-II/Data/Combined.csv")
+
+# Select the features for the model and preprocess the data
+selected_features <- c("batter_style", "wickets", "bowler_style")
+x <- df[selected_features]
+
+# Convert categorical variables to binary encoding
+x$batter_style <- ifelse(x$batter_style == "right", 0, 1)
+x$bowler_style <- ifelse(x$bowler_style == "fast", 0, 1)
+
+# Define the target variable (response)
+y <- df$balls
+stack_model=readRDS("D:/Minor_Project-II/Code/Model/hybrid_wicket_trained_model.rds")
+models=readRDS("D:/Minor_Project-II/Code/Model/models.rds")
+predictions <- suppressWarnings({
+  data.frame(
+    linear_reg = predict(models$linear_reg, newdata = x),
+    rf_model = predict(models$rf_model, newdata = x),
+    xgboost = predict(models$xgboost, newdata = x, iteration_range = c(1, models$xgboost$bestTune$nrounds))
+  )
+})
+stacked_predictions <- predict(stack_model, newdata = predictions)
+calculate_metrics <- function(actual, predicted) {
+  mae <- mean(abs(actual - predicted))
+  rmse <- sqrt(mean((actual - predicted)^2))
+  mse <- mean((actual - predicted)^2)
+  rss <- sum((actual - predicted)^2)
+  tss <- sum((actual - mean(actual))^2)
+  r_squared <- 1 - rss / tss
+  return(c(MAE = mae, RMSE = rmse, MSE = mse, R_squared = r_squared))
+}
+
+metrics <- data.frame(
+  Model = character(),
+  MAE = numeric(),
+  RMSE = numeric(),
+  MSE = numeric(),
+  R_squared = numeric(),
+  stringsAsFactors = FALSE
+)
+
+for (model in colnames(predictions)) {
+  model_metrics <- calculate_metrics(y, predictions[[model]])
+  metrics <- rbind(metrics, data.frame(Model = model, t(model_metrics)))
+}
+
+stacked_metrics <- calculate_metrics(y, stacked_predictions)
+metrics <- rbind(metrics, data.frame(Model = "stacked", t(stacked_metrics)))
+
+# Print the metrics
+print(metrics)
+
+# Plot error metrics comparison
+metrics_long <- reshape2::melt(metrics, id.vars = "Model")
+ggplot(metrics_long, aes(x = Model, y = value, fill = Model)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  facet_wrap(~variable, scales = "free_y") +
+  theme_minimal() +
+  ggtitle("Error Metrics Comparison") +
+  ylab("Value") +
+  xlab("Model") +
+  theme(legend.position = "none")
+
+# Plot Actual vs Predicted for each model
+for (model in colnames(predictions)) {
+  p <- ggplot(data.frame(Actual = y, Predicted = predictions[[model]]), aes(x = Actual, y = Predicted)) +
+    geom_point(color = "blue", alpha = 0.6) +
+    geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "red") +
+    ggtitle(paste("Actual vs Predicted -", model)) +
+    xlab("Actual Values") +
+    ylab("Predicted Values") +
+    theme_minimal()
+  print(p)
+}
+
+# Plot Residuals for each model
+for (model in colnames(predictions)) {
+  p <- ggplot(data.frame(Predicted = predictions[[model]], Errors = y - predictions[[model]]), aes(x = Predicted, y = Errors)) +
+    geom_point(color = "blue", alpha = 0.6) +
+    geom_hline(yintercept = 0, linetype = "dashed", color = "red") +
+    ggtitle(paste("Residuals vs Predicted -", model)) +
+    xlab("Predicted Values") +
+    ylab("Residuals (Errors)") +
+    theme_minimal()
+  print(p)
+}
+
+# Plot error distribution for each model
+for (model in colnames(predictions)) {
+  p <- ggplot(data.frame(Errors = y - predictions[[model]]), aes(x = Errors)) +
+    geom_histogram(binwidth = 1, fill = "blue", color = "black", alpha = 0.6) +
+    ggtitle(paste("Distribution of Residuals -", model)) +
+    xlab("Residuals (Errors)") +
+    ylab("Frequency") +
+    theme_minimal()
+  print(p)
+}
+
+# Save the stacked model for future use
+saveRDS(stack_model, "D:/Minor_Project-II/Code/Model/hybrid_wicket_trained_model.rds")
+
+````
+## Transforming Ball-By-Ball data to Over-By-Over
+```{r tidy=TRUE,eval=FALSE}
+
+OverBYOver<- function(ball_by_ball,filename){
+library(dplyr)
+library(tidyr)
+library(zoo)
+# ball_by_ball <- read.csv("D:/Minor_Project-II/Data/Datasets/65244.csv")
+# # print(ball_by_ball[1,])
+if(nrow(ball_by_ball)==0){
+  return(data.frame())
+}
+over_by_over <- ball_by_ball %>%
+  group_by(innings, over = floor(balls)) %>%
+  summarise(
+    runs_in_over = sum(runsperball),
+    wickets_in_over = ifelse(sum(wickets)>10,sum(wickets)%%10,sum(wickets)),
+    run_rate = sum(runsperball) / 6,
+    score = max(total_score),
+  )
+
+
+
+# over_by_over <- read.csv("D:/Minor_Project-II/Code/over_by_over.csv")
+
+over_by_over <- over_by_over %>%
+  group_by(innings) %>%
+  mutate(
+    required_run_rate = ifelse(innings == 1, 0, (max(score) - score) / (50 - over))
+  )
+over_by_over <- over_by_over %>%
+  group_by(innings) %>%
+  mutate(
+    runs_in_previous_3_overs = rollapplyr(runs_in_over, width = 3, FUN = sum, fill = 0),
+
+  )
+
+# print(over_by_over)
+
+# write.csv(over_by_over, "D:/Minor_Project-II/Code/over_by_over.csv", row.names = FALSE)
+# write.csv(over_by_over, paste0("D:/Minor_Project-II/Data/Datasets/OverByOver/", filename), row.names = FALSE)
+return(over_by_over)
+}
+
+
+names = c()
+list = list.files("D:/Minor_Project-II/Data/Datasets/BallByBall")
+
+library(jsonlite)
+base_dir <- "D:/Minor_Project-II/Data/IND vs AUS/ODI"
+year_folders <- list.files(base_dir)
+for (year in year_folders){
+    json_files <- list.files(paste(base_dir, year, sep = "/"))
+    for (json_file in json_files){
+        len = nchar(json_file)
+        # print(substr(json_file,1,len-5))
+        names = c(names,paste0(substr(json_file,1,len-5),".csv"))
+    }
+}
+# print(length(names))
+names = intersect(names,list)
+# print(length(names))
+# print(list)
+# print(names)
+aggregated_over_by_over <- data.frame()
+for(i in 1:length(names)){
+    
+    x = read.csv(paste0("D:/Minor_Project-II/Data/Datasets/BallByBall/",names[i]))
+    df = OverBYOver(x,names[i])
+    aggregated_over_by_over <- rbind(aggregated_over_by_over,df)
+}
+write.csv(aggregated_over_by_over, "D:/Minor_Project-II/Data/Datasets/OverByOver/Aggregated.csv", row.names = FALSE)
+```
+## Stacking Models for Score Prediction
+This cell contains the code for building the model to predict score of a team based on the match situation where the features include innings, over, runs_in_the_over, wickets, wickets_in_the_over, runs_in_previous_3_overs, run_rate, required_run_rate.
+````{r echo=TRUE, tidy=TRUE,eval=TRUE}
+# Load necessary libraries
+library(tidyr)
+library(dplyr)
+library(caret)
+library(ggplot2)
+library(ggpubr)
+library(pdp)
+suppressWarnings({
+
+
+# Read the aggregated CSV file
+data <- read.csv("D:/Minor_Project-II/Data/Datasets/OverByOver/Aggregated.csv")
+
+# Handle missing values
+data$required_run_rate[is.na(data$required_run_rate)] <- 0  # Substitute NA with 0 in required run rate
+
+# Split the data into training and testing sets
+set.seed(123)  # For reproducibility
+train_index <- createDataPartition(data$score, p = 0.8, list = FALSE)
+train_data <- data[train_index, ]
+test_data <- data[-train_index, ]
+
+# Define features and target variable
+features <- c("over", "wickets_in_over", 
+              "runs_in_over", "run_rate", "required_run_rate", "runs_in_previous_3_overs", "innings")
+target <- "score"
+
+# Check if the columns exist in the training data
+if (all(features %in% colnames(train_data)) && target %in% colnames(train_data)) {
+  # Train the model
+  model <- train(
+    score ~ ., 
+    data = train_data[, c(features, target)], 
+    method = "lm"  # Linear regression
+  )
+
+  # Evaluate the model
+  predictions <- predict(model, newdata = test_data[, features])
+  mae <- mean(abs(predictions - test_data$score))
+  mse <- mean((predictions - test_data$score)^2)
+  rmse <- sqrt(mse)
+
+  # Print evaluation metrics
+  cat("Mean Absolute Error (MAE):", mae, "\n")
+  cat("Mean Squared Error (MSE):", mse, "\n")
+  cat("Root Mean Squared Error (RMSE):", rmse, "\n")
+
+  # Actual vs. Predicted Plot
+  actual_vs_predicted <- ggplot() +
+    geom_point(aes(x = test_data$score, y = predictions)) +
+    geom_abline(intercept = 0, slope = 1, color = "red") +
+    labs(x = "Actual Score", y = "Predicted Score", title = "Actual vs. Predicted Plot")
+
+  # Distribution of Residuals
+  residuals_distribution <- ggplot() +
+    geom_histogram(aes(x = residuals(model), fill = "Residuals"), bins = 30, alpha = 0.7) +
+    labs(x = "Residuals", y = "Frequency", title = "Distribution of Residuals")
+
+  # Feature Importance Plot
+  feature_importance <- varImp(model)$importance
+  feature_importance_plot <- ggplot(as.data.frame(feature_importance), aes(x = reorder(rownames(feature_importance), Overall), y = Overall)) +
+    geom_bar(stat = "identity", fill = "skyblue") +
+    coord_flip() +
+    labs(x = "Features", y = "Importance", title = "Feature Importance Plot")
+
+  # Calculate RMSE for different training set sizes
+  train_sizes <- seq(0.1, 0.9, by = 0.1)
+  rmse_values <- sapply(train_sizes, function(size) {
+    train_index <- sample(1:nrow(train_data), size = size * nrow(train_data))
+    model <- train(
+      score ~ ., 
+      data = train_data[train_index, c(features, target)], 
+      method = "lm"
+    )
+    predictions <- predict(model, newdata = test_data[, features])
+    rmse <- sqrt(mean((predictions - test_data$score)^2))
+    return(rmse)
+  })
+
+  # Learning Curve
+  learning_curve <- ggplot() +
+    geom_line(aes(x = train_sizes, y = rmse_values)) +
+    labs(x = "Training Set Size", y = "RMSE", title = "Learning Curve")
+
+  # Partial Dependence Plots (PDP)
+  partial_dependence_plots <- list()
+  for (feature in features) {
+    pdp_data <- partial(model, pred.var = feature)
+    pdp_plot <- autoplot(pdp_data, feature = feature) +
+      labs(title = paste("Partial Dependence Plot for", feature))
+    partial_dependence_plots[[feature]] <- pdp_plot
+  }
+
+  # Residuals vs. Features Plots
+  residuals_vs_features_plots <- list()
+  for (feature in setdiff(features, "wickets_in_prev_3_overs")) {
+    residuals_vs_feature_plot <- ggplot(train_data, aes_string(x = feature, y = residuals(model))) +
+      geom_point() +
+      geom_smooth() +
+      labs(x = feature, y = "Residuals", title = paste("Residuals vs.", feature))
+    residuals_vs_features_plots[[feature]] <- residuals_vs_feature_plot
+  }
+
+  # Combine all plots in a single canvas
+  combined_plot <- ggarrange(actual_vs_predicted, residuals_distribution, feature_importance_plot, learning_curve, 
+                             ncol = 2, nrow = 2, labels = c("A", "B", "C", "D"), common.legend = TRUE)
+
+  # Print the combined plot
+  print(combined_plot)
+
+  # Save the combined plot to a file
+  # ggsave("combined_plot.png", combined_plot, width = 15, height = 12, units = "cm")
+} else {
+  cat("Some of the specified columns do not exist in the training data.")
+}
+})
+````
