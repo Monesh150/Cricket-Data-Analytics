@@ -1,6 +1,6 @@
 # Cricket Data Analytics
 
-[Download analysis.pbix to view the team predictions](https://github.com/mushtaq2314/Cricket-Data-Analytics/blob/main/analysis.pbix) <!-- Add a logo if you have one -->
+[Download analysis.pbix to view the PowerBI report of team predictions.](https://github.com/mushtaq2314/Cricket-Data-Analytics/blob/main/analysis.pbix) <!-- Add a logo if you have one -->
 
 ## Overview
 
