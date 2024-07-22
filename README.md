@@ -27,10 +27,13 @@ Cricket Data Analytics is a comprehensive project designed to analyze cricket da
    git clone https://github.com/mushtaq2314/Cricket-Data-Analytics.git
    cd Cricket-Data-Analytics
    ```
+   
 2. **Download R and RStudio**
+   
 3. **Install Dependencies**
    ```sh
    install.packages(c("dplyr", "ggplot2", "caret", "rvest", "tidyr","randomForest","xgboost","zoo"))
    ```
-4. **Documentation**
-   For detailed analysis and findings, refer to the (https://github.com/mushtaq2314/Cricket-Data-Analytics/blob/main/Documentation/Cricket_Data_Analytics.pdf "project report").
+4. **Documentation**  
+   For detailed analysis and findings, refer to the [project report](https://github.com/mushtaq2314/Cricket-Data-Analytics/blob/main/Documentation/Cricket_Data_Analytics.pdf "Cricket Data Analytics Report").
+
